@@ -1,3 +1,9 @@
-test.out
+# Editors
 .idea
-/tmp
+.vscode
+
+# Environment files
+.env
+
+# Temporal files and folders
+test.out

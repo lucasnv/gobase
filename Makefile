@@ -3,7 +3,7 @@ SHELL:=/bin/bash -O extglob
 BINARY=app
 VERSION=0.0.0
 LDFLAGS=-ldflags "-X main.Version=${VERSION}"
-CONTAINER_NAME=app
+CONTAINER_NAME=toolboard-api
 
 # Build step, generates the binary.
 .PHONY: build
@@ -39,7 +39,8 @@ show-cover:
 
 .PHONY: init
 init:
-	docker-compose run --rm app go mod init ${module}
+	@echo ${module}
+	docker-compose run --rm ${CONTAINER_NAME} go mod init "${module}"
 	@echo "Project base initialized"
 
 .PHONY: start
@@ -61,5 +62,6 @@ in:
 # Run go formatter
 .PHONY: fmt
 fmt:
-	docker-compose run --rm ${CONTAINER_NAME} gofmt -w .
+	docker-compose run ${CONTAINER_NAME} gofmt -w .
 
+# replace every string sed -i 's+lucasnv/tooling-api+omi-tech/api+g' *.*

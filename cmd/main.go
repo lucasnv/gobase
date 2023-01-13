@@ -1,16 +1,24 @@
 package main
 
 import (
-	"fmt"
-	"log"
-	"time"
+	"os"
+
+	"[REPO_URL]/http"
+	"[REPO_URL]/internal/config"
+	"[REPO_URL]/pkg/shared/insfrastructure/commandbus"
+	"[REPO_URL]/pkg/shared/insfrastructure/dependencyinjection"
 )
 
 func main() {
-	log.Println("Start app")
+	// CONFIG
+	config.InitializeDotEnv()
 
-	for {
-		fmt.Println("Is where my deamons hide")
-		time.Sleep(time.Second * 15)
-	}
+	// DEPENDENCY INJECTION
+	dependencyInjection := dependencyinjection.NewDependencyInjection()
+
+	// COMMAND BUS
+	commandBus := commandbus.Initialize(dependencyInjection)
+
+	// SERVER HTTP
+	http.InitializeServer(os.Getenv("SERVER_ADDRESS"), commandBus)
 }
