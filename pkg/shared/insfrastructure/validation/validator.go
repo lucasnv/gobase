@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	"github.com/go-playground/validator/v10"
-	internalError "[MODULE_URL]/pkg/shared/domain/errors"
+	internalError "<MODULE_URL_REPLACE>/pkg/shared/domain/errors"
 )
 
 type Validator interface {

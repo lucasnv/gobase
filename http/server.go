@@ -5,8 +5,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"[MODULE_URL]/http/middleware"
-	"[MODULE_URL]/internal/commandbus"
+	"<MODULE_URL_REPLACE>/http/middleware"
+	"<MODULE_URL_REPLACE>/internal/commandbus"
 )
 
 type Server struct {

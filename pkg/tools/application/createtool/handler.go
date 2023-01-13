@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"[MODULE_URL]/internal/commandbus"
+	"<MODULE_URL_REPLACE>/internal/commandbus"
 )
 
 type CommandHandler struct {

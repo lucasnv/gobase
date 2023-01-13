@@ -1,8 +1,8 @@
 package dependencyinjection
 
 import (
-	"[MODULE_URL]/pkg/tools/application/createtool"
-	"[MODULE_URL]/pkg/users/application/registeruser"
+	"<MODULE_URL_REPLACE>/pkg/tools/application/createtool"
+	"<MODULE_URL_REPLACE>/pkg/users/application/registeruser"
 )
 
 type DependencyInjection struct {

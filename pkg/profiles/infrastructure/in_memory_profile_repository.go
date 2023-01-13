@@ -2,7 +2,7 @@ package profiles
 
 /*
 import (
-	d "[MODULE_URL]/pkg/profiles/domain"
+	d "<MODULE_URL_REPLACE>/pkg/profiles/domain"
 )
 
 type inMemoryProfileRepository struct{}

@@ -9,8 +9,16 @@ printf "${Yellow}> Installing proyect ... ${Color_Off} \n"
 printf "\n"
 
 
-grep -rl --exclude-dir=.git --exclude-dir=bin --exclude-dir=.github --exclude-dir=cmd --exclude-dir=config --exclude-dir=db --exclude-dir=scripts "[MODULE_URL]" .
+# grep -rl --exclude-dir=.git --exclude-dir=bin --exclude-dir=.github --exclude-dir=cmd --exclude-dir=config --exclude-dir=db --exclude-dir=scripts "[MODULE_URL]" .
 
+grep -rl --exclude-dir=.git \
+         --exclude-dir=bin \
+         --exclude-dir=.github \
+         --exclude-dir=cmd \
+         --exclude-dir=config \
+         --exclude-dir=db \
+         --exclude-dir=scripts \
+         '<MODULE_URL_REPLACE>' . | xargs sed -i "s+<MODULE_URL_REPLACE>+$1+g"
 
 # find . -type f -exec sed -i 's+[MODULE_URL]+PRUEBAAAAAAAA+g' {} +
 

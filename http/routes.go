@@ -1,7 +1,7 @@
 package http
 
 import (
-	"[MODULE_URL]/http/handler/health"
+	"<MODULE_URL_REPLACE>/http/handler/health"
 )
 
 //TODO: Change this constant version to GIN GROUP ROUTE

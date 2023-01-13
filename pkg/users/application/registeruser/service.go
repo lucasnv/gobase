@@ -3,8 +3,8 @@ package registeruser
 import (
 	"context"
 
-	"[MODULE_URL]/pkg/shared/domain/valueobjects"
-	users "[MODULE_URL]/pkg/users/domain"
+	"<MODULE_URL_REPLACE>/pkg/shared/domain/valueobjects"
+	users "<MODULE_URL_REPLACE>/pkg/users/domain"
 )
 
 type Service struct {

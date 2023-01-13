@@ -1,10 +1,10 @@
 package commandbus
 
 import (
-	"[MODULE_URL]/internal/commandbus"
-	"[MODULE_URL]/pkg/shared/insfrastructure/dependencyinjection"
-	"[MODULE_URL]/pkg/tools/application/createtool"
-	"[MODULE_URL]/pkg/users/application/registeruser"
+	"<MODULE_URL_REPLACE>/internal/commandbus"
+	"<MODULE_URL_REPLACE>/pkg/shared/insfrastructure/dependencyinjection"
+	"<MODULE_URL_REPLACE>/pkg/tools/application/createtool"
+	"<MODULE_URL_REPLACE>/pkg/users/application/registeruser"
 )
 
 func Initialize(di *dependencyinjection.DependencyInjection) *commandbus.CommandBus {

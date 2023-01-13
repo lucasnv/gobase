@@ -1,7 +1,7 @@
 package createtool
 
 import (
-	"[MODULE_URL]/internal/commandbus"
+	"<MODULE_URL_REPLACE>/internal/commandbus"
 )
 
 const COMMMAND_TYPE commandbus.Type = "command.creating.tool"
