@@ -70,5 +70,3 @@ in:
 .PHONY: fmt
 fmt:
 	docker-compose run ${CONTAINER_NAME} gofmt -w .
-
-# replace every string sed -i 's+lucasnv/tooling-api+omi-tech/api+g' *.*
