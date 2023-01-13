@@ -3,8 +3,8 @@ package users
 import (
 	"time"
 
-	"[REPO_URL]/pkg/shared/domain/valueobjects"
-	"[REPO_URL]/pkg/shared/insfrastructure/validation"
+	"[MODULE_URL]/pkg/shared/domain/valueobjects"
+	"[MODULE_URL]/pkg/shared/insfrastructure/validation"
 )
 
 // FIRST NAME

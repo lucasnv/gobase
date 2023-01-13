@@ -3,10 +3,10 @@ package main
 import (
 	"os"
 
-	"[REPO_URL]/http"
-	"[REPO_URL]/internal/config"
-	"[REPO_URL]/pkg/shared/insfrastructure/commandbus"
-	"[REPO_URL]/pkg/shared/insfrastructure/dependencyinjection"
+	"[MODULE_URL]/http"
+	"[MODULE_URL]/internal/config"
+	"[MODULE_URL]/pkg/shared/insfrastructure/commandbus"
+	"[MODULE_URL]/pkg/shared/insfrastructure/dependencyinjection"
 )
 
 func main() {

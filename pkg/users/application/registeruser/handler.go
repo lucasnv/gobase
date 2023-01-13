@@ -3,10 +3,10 @@ package registeruser
 import (
 	"context"
 
-	"[REPO_URL]/internal/commandbus"
-	internalError "[REPO_URL]/pkg/shared/domain/errors"
-	"[REPO_URL]/pkg/shared/domain/valueobjects"
-	users "[REPO_URL]/pkg/users/domain"
+	"[MODULE_URL]/internal/commandbus"
+	internalError "[MODULE_URL]/pkg/shared/domain/errors"
+	"[MODULE_URL]/pkg/shared/domain/valueobjects"
+	users "[MODULE_URL]/pkg/users/domain"
 )
 
 type CommandHandler struct {

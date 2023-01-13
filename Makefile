@@ -3,7 +3,8 @@ SHELL:=/bin/bash -O extglob
 BINARY=app
 VERSION=0.0.0
 LDFLAGS=-ldflags "-X main.Version=${VERSION}"
-CONTAINER_NAME=toolboard-api
+CONTAINER_NAME=${cn}
+MODULE_URL=${mu}
 
 # Build step, generates the binary.
 .PHONY: build
@@ -37,10 +38,16 @@ show-cover:
 	@clear
 	docker-compose run --rm ${CONTAINER_NAME} go tool cover -html=test.out
 
+# RUN ex: make install mu='github.com/omi-tech/api' cn="toolboard-api"
+.PHONY: install
+install:
+	./bin/install.sh ${MODULE_URL} ${CONTAINER_NAME}
+	@echo "Project base installed"
+
 .PHONY: init
 init:
-	@echo ${module}
-	docker-compose run --rm ${CONTAINER_NAME} go mod init "${module}"
+	@echo ${MODULE_URL}
+	docker-compose run --rm ${CONTAINER_NAME} go mod init "${MODULE_URL}"
 	@echo "Project base initialized"
 
 .PHONY: start

@@ -1,7 +1,7 @@
 package tools
 
 import (
-	"[REPO_URL]/pkg/shared/domain/valueobjects"
+	"[MODULE_URL]/pkg/shared/domain/valueobjects"
 )
 
 // NAME

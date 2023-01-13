@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	"github.com/gin-gonic/gin"
-	internalError "[REPO_URL]/pkg/shared/domain/errors"
+	internalError "[MODULE_URL]/pkg/shared/domain/errors"
 )
 
 const NO_STATUS_CODE = -1
