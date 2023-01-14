@@ -10,7 +10,7 @@ services:
     volumes:
       - .:/opt/app/api:rw,delegated
     networks:
-      - toolboard_network
+      - <CONTAINER_NAME_REPLACE>_network
     ports:
       - 8080:8080
       - 2345:2345

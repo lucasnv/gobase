@@ -38,11 +38,6 @@ show-cover:
 	@clear
 	docker-compose run --rm ${CONTAINER_NAME} go tool cover -html=test.out
 
-# RUN ex: make install mu='github.com/omi-tech/api' cn="toolboard-api"
-.PHONY: install
-install:
-	./bin/install.sh ${MODULE_URL} ${CONTAINER_NAME}
-
 .PHONY: init
 init:
 	@echo ${MODULE_URL}
