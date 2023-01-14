@@ -2,8 +2,8 @@ version: "3.7"
 services:
   # The Go App, 
   # container_name is related with Makefile in order to run commands inside the container
-  [CONTAINER_NAME]:
-    container_name: [CONTAINER_NAME]
+  <CONTAINER_NAME_REPLACE>:
+    container_name: <CONTAINER_NAME_REPLACE>
     build:
       context: .
       target: dev
@@ -22,5 +22,5 @@ services:
 
       
 networks:
-  [CONTAINER_NAME]_network:
-    name: [CONTAINER_NAME]_network
+  <CONTAINER_NAME_REPLACE>_network:
+    name: <CONTAINER_NAME_REPLACE>_network
