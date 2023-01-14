@@ -3,7 +3,7 @@ SHELL:=/bin/bash -O extglob
 BINARY=app
 VERSION=0.0.0
 LDFLAGS=-ldflags "-X main.Version=${VERSION}"
-CONTAINER_NAME="<CONTAINER_NAME_REPLACE>""
+CONTAINER_NAME="<CONTAINER_NAME_REPLACE>"
 MODULE_URL="<MODULE_URL_REPLACE>"
 
 # Build step, generates the binary.
