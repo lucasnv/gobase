@@ -77,6 +77,7 @@ On_IWhite='\033[0;107m'   # White
 
 printf "\n"
 printf "${Black} ${On_Yellow}> Installing, wait a moment please < ${Color_Off} \n"
+printf "\n"
 
 # set the module URL
 grep -rl --exclude-dir=.git \

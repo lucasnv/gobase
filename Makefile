@@ -42,7 +42,6 @@ show-cover:
 .PHONY: install
 install:
 	./bin/install.sh ${MODULE_URL} ${CONTAINER_NAME}
-	@echo "Project base installed"
 
 .PHONY: init
 init:
