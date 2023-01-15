@@ -40,9 +40,8 @@ show-cover:
 
 .PHONY: init
 init:
-	@echo ${MODULE_URL}
-	docker-compose run --rm ${CONTAINER_NAME} go mod init "${MODULE_URL}"
-	@echo "Project base initialized"
+	docker-compose build
+	docker-compose up
 
 .PHONY: start
 start:

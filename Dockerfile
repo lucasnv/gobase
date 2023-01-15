@@ -2,10 +2,6 @@ FROM golang:1.19.5-alpine3.17 AS base
 
 WORKDIR /opt/app/api
 
-#ENV GO111MODULE="on"
-#ENV GOOS="linux"
-#ENV CGO_ENABLED=0
-
 # System dependencies
 RUN apk update \
     && apk add --no-cache \
@@ -22,10 +18,6 @@ WORKDIR /opt/app/api
 RUN curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s latest
 
 # Install go libs
-RUN go mod tidy
-#RUN go install github.com/gin-gonic/gin@latest
-#RUN go install github.com/joho/godotenv@latest
-#RUN go install github.com/google/uuid@latest
 RUN go install golang.org/x/tools/gopls@latest
 RUN go install -ldflags "-s -w -extldflags '-static'" github.com/go-delve/delve/cmd/dlv@latest
 
