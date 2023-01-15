@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Colors
 # Reset
@@ -74,10 +74,93 @@ On_IPurple='\033[0;105m'  # Purple
 On_ICyan='\033[0;106m'    # Cyan
 On_IWhite='\033[0;107m'   # White
 
+# Progress bar parameters
+bar_size=40
+bar_char_done="#"
+bar_char_todo="-"
+bar_percentage_scale=2
+tasks_in_total=8
+
+# Functions
+show_progress ()
+{
+    current="$1"
+    total="$2"
+    task="$3"
+
+    # calculate the progress in percentage 
+    percent=$(bc <<< "scale=$bar_percentage_scale; 100 * $current / $total" )
+    # The number of done and todo characters
+    done=$(bc <<< "scale=0; $bar_size * $percent / 100" )
+    todo=$(bc <<< "scale=0; $bar_size - $done" )
+
+    # build the done and todo sub-bars
+    done_sub_bar=$(printf "%${done}s" | tr " " "${bar_char_done}")
+    todo_sub_bar=$(printf "%${todo}s" | tr " " "${bar_char_todo}")
+
+    # output the bar
+    echo -ne "\rProgress :${BYellow} [${done_sub_bar}${todo_sub_bar}] ${percent}% ${Green} ${task} ${Color_Off}"
+
+    if [ $total -eq $current ]; then
+        #echo -e "\nDONE"
+        printf "\n"
+    fi
+}
+
+show_example_message()
+{
+    printf "\n ${On_Green}                                                                                                    ${Color_Off}\n"
+    printf "${Black} ${On_Green} Example: ./install-go-base-project.sh [MODULE PATH] [DOCKER CONTAINER NAME] [FOLDER PROJECT NAME]  ${Color_Off}\n"
+    printf " ${On_Green}                                                                                                    ${Color_Off}\n"
+}
+
+show_error_message()
+{
+    printf "\n"
+    printf "${White} ${On_Red} > Before to install, you have to set your '$1' as $2 parameter < ${Color_Off}\n"
+    printf "\n"
+}
+
 
 printf "\n"
-printf "${Black} ${On_Yellow}> Installing, wait a moment please < ${Color_Off} \n"
-printf "\n"
+show_progress 1 $tasks_in_total "Checking parameters"
+show_progress 2 $tasks_in_total "Start installation"
+
+# Check parameters
+if [ -z "$1" ]
+  then
+    show_error_message "module path" "first"
+    show_example_message
+    exit 0
+fi
+
+if [ -z "$2" ]
+  then
+    show_error_message "docker container name" "second"
+    show_example_message
+    exit 0
+fi
+
+if [ -z "$3" ]
+  then
+    show_error_message "the name of your folder locally" "third"
+    show_example_message
+    exit 0
+fi
+
+
+# Clone gobase project
+show_progress 3 $tasks_in_total "Downloading project"
+git clone git@github.com:lucasnv/gobase.git $3 &> /dev/null
+
+
+show_progress 4 $tasks_in_total "Configurating project"
+# Move into the project folder
+cd $3
+
+
+# Remove github repository source
+rm -dfr .git
 
 # set the module URL
 grep -rl --exclude-dir=.git \
@@ -95,8 +178,31 @@ grep -rl --exclude-dir=.git \
          --exclude-dir=config \
          --exclude-dir=db \
          --exclude-dir=scripts \
-         '<CONTAINER_NAME_REPLACE>' . | xargs sed -i "s+<CONTAINER_NAME_REPLACE>+$2+g"         
+         '<CONTAINER_NAME_REPLACE>' . | xargs sed -i "s+<CONTAINER_NAME_REPLACE>+$2+g"
+
+# Installing go mod
+show_progress 5 $tasks_in_total "Generating environment file"
+cp env.example .env
 
 
-printf "${Black} ${On_Green}> Installation complete < ${Color_Off} \n"
+show_progress 6 $tasks_in_total "Configurating go modules        "
+docker run -v `pwd`:/app-src -w /app-src -ti golang:1.19.5-alpine3.17 go mod init $1 &> /dev/null
+docker run -v `pwd`:/app-src -w /app-src -ti golang:1.19.5-alpine3.17 go mod tidy &> /dev/null
+
+# docker run -v `pwd`:/app-src -ti golang:1.19.5-alpine3.17 go mod init "github.com/omi-tech/api"
+# 
+#TODO
+# ./install-go-base-project.sh "github.com/omi-tech/api" "toolboard-api" testgobase
+# tengo que generar el go.mod
+# tengo que generar el mod.sum
+# tengo que copiar el env.example al .env
+# podria pasarle al script de instalacion la version de go para 
+
+#- la idea es hacer un archivo de instalacion separado del projecto
+# docker run -v `pwd`:"/src" -ti golang:1.19.5-alpine3.17 go mod init github.com/omi-tech/api
+
+
+
+show_progress $tasks_in_total $tasks_in_total "Completed                 "
+
 printf "\n"
