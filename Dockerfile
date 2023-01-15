@@ -14,6 +14,9 @@ FROM base AS dev
 
 WORKDIR /opt/app/api
 
+# Download app libs
+#RUN go mod download
+
 # Install tools
 RUN curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s latest
 
