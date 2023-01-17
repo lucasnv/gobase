@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"<MODULE_URL_REPLACE>/internal/commandbus"
+	"<MODULE_URL_REPLACE>/pkg/shared/infrastructure/commandbus"
 )
 
 type CommandHandler struct {

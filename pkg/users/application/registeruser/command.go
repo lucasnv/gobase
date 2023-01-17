@@ -1,7 +1,7 @@
 package registeruser
 
 import (
-	"<MODULE_URL_REPLACE>/internal/commandbus"
+	"<MODULE_URL_REPLACE>/pkg/shared/infrastructure/commandbus"
 )
 
 const COMMMAND_TYPE commandbus.Type = "command.registering.user"
