@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"<MODULE_URL_REPLACE>/pkg/shared/domain/valueobjects"
-	"<MODULE_URL_REPLACE>/pkg/shared/insfrastructure/validation"
+	"<MODULE_URL_REPLACE>/pkg/shared/infrastructure/validation"
 )
 
 // FIRST NAME

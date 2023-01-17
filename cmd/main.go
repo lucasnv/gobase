@@ -4,9 +4,9 @@ import (
 	"os"
 
 	"<MODULE_URL_REPLACE>/http"
-	"<MODULE_URL_REPLACE>/internal/config"
-	"<MODULE_URL_REPLACE>/pkg/shared/insfrastructure/commandbus"
-	"<MODULE_URL_REPLACE>/pkg/shared/insfrastructure/dependencyinjection"
+	"<MODULE_URL_REPLACE>/pkg/shared/infrastructure/config"
+	"<MODULE_URL_REPLACE>/pkg/shared/infrastructure/commandbus"
+	"<MODULE_URL_REPLACE>/pkg/shared/infrastructure/dependencyinjection"
 )
 
 func main() {

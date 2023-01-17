@@ -2,7 +2,7 @@ package commandbus
 
 import (
 	"<MODULE_URL_REPLACE>/internal/commandbus"
-	"<MODULE_URL_REPLACE>/pkg/shared/insfrastructure/dependencyinjection"
+	"<MODULE_URL_REPLACE>/pkg/shared/infrastructure/dependencyinjection"
 	"<MODULE_URL_REPLACE>/pkg/tools/application/createtool"
 	"<MODULE_URL_REPLACE>/pkg/users/application/registeruser"
 )
