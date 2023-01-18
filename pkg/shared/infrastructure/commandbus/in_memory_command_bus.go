@@ -28,6 +28,6 @@ func (cb *CommandBus) Dispatch(ctx context.Context, cmd Command) error {
 }
 
 // Register implements the command.Bus interface.
-func (b *CommandBus) Register(cmdType Type, handler Handler) {
-	b.handlers[cmdType] = handler
+func (b *CommandBus) Register(t Type, h Handler) {
+	b.handlers[t] = h
 }

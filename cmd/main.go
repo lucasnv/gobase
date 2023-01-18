@@ -7,6 +7,7 @@ import (
 	"<MODULE_URL_REPLACE>/pkg/shared/infrastructure/config"
 	"<MODULE_URL_REPLACE>/pkg/shared/infrastructure/commandbus"
 	"<MODULE_URL_REPLACE>/pkg/shared/infrastructure/dependencyinjection"
+	"<MODULE_URL_REPLACE>/pkg/users/application/registeruser"
 )
 
 func main() {
@@ -14,10 +15,12 @@ func main() {
 	config.InitializeDotEnv()
 
 	// DEPENDENCY INJECTION
-	dependencyInjection := dependencyinjection.NewDependencyInjection()
+	di := dependencyinjection.NewDependencyInjection()
 
 	// COMMAND BUS
-	commandBus := commandbus.Initialize(dependencyInjection)
+	commandBus := commandbus.NewCommandBus()
+
+	commandBus.Register(registeruser.COMMMAND_TYPE, di.RegisterUserCommandHandler)
 
 	// SERVER HTTP
 	http.InitializeServer(os.Getenv("SERVER_ADDRESS"), commandBus)
