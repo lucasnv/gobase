@@ -5,7 +5,6 @@ import (
 )
 
 type DependencyInjection struct {
-	CreateToolCommandHandler   createtool.CommandHandler
 	RegisterUserCommandHandler registeruser.CommandHandler
 }
 
