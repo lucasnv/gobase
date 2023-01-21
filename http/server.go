@@ -15,7 +15,7 @@ type Server struct {
 }
 
 // InitializeServer Init api server
-func InitializeServer(address string, cm *commandbus.CommandBus) {
+func InitializeServer(address string, cm commandbus.CommandBus) {
 	engine := gin.Default()
 
 	engine.Use(middleware.ErrorHandler)
