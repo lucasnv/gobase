@@ -67,3 +67,5 @@ func (h CommandHandler) Handle(ctx context.Context, cmd commandbus.Command) erro
 		password,
 	)
 }
+
+var _ commandbus.Handler = (*CommandHandler)(nil)

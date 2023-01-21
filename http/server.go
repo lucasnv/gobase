@@ -11,7 +11,7 @@ import (
 
 type Server struct {
 	engine     *gin.Engine
-	commandBus commandbus.Bus
+	commandBus commandbus.CommandBus
 }
 
 // InitializeServer Init api server

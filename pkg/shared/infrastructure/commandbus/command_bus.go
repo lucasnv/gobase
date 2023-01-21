@@ -5,7 +5,7 @@ import (
 )
 
 // Bus defines the expected behaviour from a command bus.
-type Bus interface {
+type CommandBus interface {
 	Dispatch(context.Context, Command) error
 	Register(Type, Handler)
 }

@@ -18,7 +18,7 @@ func main() {
 	di := dependencyinjection.NewDependencyInjection()
 
 	// COMMAND BUS
-	commandBus := commandbus.NewCommandBus()
+	commandBus := commandbus.NewInMemoryCommandBus()
 
 	commandBus.Register(registeruser.COMMMAND_TYPE, di.RegisterUserCommandHandler)
 

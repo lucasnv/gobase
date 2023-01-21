@@ -7,10 +7,24 @@ import (
 	"<MODULE_URL_REPLACE>/pkg/shared/infrastructure/validation"
 )
 
-// FIRST NAME
-type FirstName struct {
-	value string
-}
+// Value Objects
+type (
+	FirstName struct {
+		value string
+	}
+
+	LastName struct {
+		value string
+	}
+
+	Email struct {
+		value string
+	}
+
+	Password struct {
+		value string
+	}
+)
 
 func NewFirstName(value string) (FirstName, error) {
 	validate := validation.New()
@@ -20,11 +34,6 @@ func NewFirstName(value string) (FirstName, error) {
 	}
 
 	return FirstName{value: value}, nil
-}
-
-// LAST NAME
-type LastName struct {
-	value string
 }
 
 func NewLastName(value string) (LastName, error) {
@@ -37,11 +46,6 @@ func NewLastName(value string) (LastName, error) {
 	return LastName{value: value}, nil
 }
 
-// EMAIL
-type Email struct {
-	value string
-}
-
 func NewEmail(value string) (Email, error) {
 	validate := validation.New()
 
@@ -50,11 +54,6 @@ func NewEmail(value string) (Email, error) {
 	}
 
 	return Email{value: value}, nil
-}
-
-// PASSWORD
-type Password struct {
-	value string
 }
 
 func NewPassword(value string) (Password, error) {
@@ -69,6 +68,7 @@ func NewPassword(value string) (Password, error) {
 	return Password{value: value}, nil
 }
 
+// Entity
 type User struct {
 	id        valueobjects.Id
 	firstName FirstName

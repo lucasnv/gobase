@@ -39,9 +39,9 @@ You can execute any command using makefile, the following command described belo
 
 ## TODO
 
+- I have to finish to create an example to create an user, and get an user. I have to implement mongo and memory storage
 - Delete tool boundedcontext.
 - delete internal folder and move everything into share/infrastructure
-- Create an example to create an user, and get an user.
 - move http server to share/infrastructure
 - Create a folde into cmd folder one per entrypoint (api, cli, etc)
 - Take a look on make commands like lint-prepare and lint (make a intallation and it's not necesary)
