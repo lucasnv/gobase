@@ -7,14 +7,10 @@ import (
 	users "<MODULE_URL_REPLACE>/pkg/users/domain"
 )
 
-type Service struct {
-	userRepository users.UserRepository
-}
+type Service struct {}
 
-func NewService(repository users.UserRepository) Service {
-	return Service{
-		userRepository: repository,
-	}
+func NewService() Service {
+	return Service{	}
 }
 
 func (s Service) exec(ctx context.Context, id valueobjects.Id, firstName users.FirstName, lastName users.LastName, email users.Email, password users.Password) error {
