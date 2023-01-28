@@ -2,27 +2,29 @@ package registeruser
 
 import (
 	"context"
+	"fmt"
 
 	"<MODULE_URL_REPLACE>/pkg/shared/domain/valueobjects"
-	users "<MODULE_URL_REPLACE>/pkg/users/domain"
+	"<MODULE_URL_REPLACE>/pkg/shared/infrastructure/commandbus"
+	"<MODULE_URL_REPLACE>/pkg/users/domain"
 )
 
-type Service struct {}
-
-func NewService() Service {
-	return Service{	}
+type Service struct {
+	UserRepository domain.UserRepository
 }
 
-func (s Service) exec(ctx context.Context, id valueobjects.Id, firstName users.FirstName, lastName users.LastName, email users.Email, password users.Password) error {
+/*
+func NewService(ur domain.UserRepository) Service {
+	return Service{
+		UserRepository: ur,
+	}
+}
+*/
+
+func (s Service) exec(ctx context.Context, id valueobjects.Id, firstName domain.FirstName, lastName domain.LastName, email domain.Email, password domain.Password) error {
+	fmt.Println("exec service registeruser")
+	s.UserRepository.Save()
 	return nil
-	/*course, err := mooc.NewCourse(id, name, duration)
-	if err != nil {
-		return err
-	}
-
-	if err := s.courseRepository.Save(ctx, course); err != nil {
-		return err
-	}
-
-	return s.eventBus.Publish(ctx, course.PullEvents())*/
 }
+
+var _ commandbus.Handler = (*CommandHandler)(nil)

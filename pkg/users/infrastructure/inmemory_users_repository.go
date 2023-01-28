@@ -1,23 +1,23 @@
-package users
+package infrastructure
+
+import (
+	"fmt"
+	//domain "<MODULE_URL_REPLACE>/pkg/users/domain"
+)
 
 type InmemoryUsersRepository struct {
-	//users //array de usuarios. 
+	//users //array de usuarios.
 }
 
-func NewInmemoryUsersRepository () InmemoryUsersRepository {
+/*
+func NewInmemoryUsersRepository() InmemoryUsersRepository {
 	return InmemoryUsersRepository{}
 }
-
-func (r InmemoryUsersRepository) Find() User {
-
-}
-
-func (r InmemoryUsersRepository) FindBy() {
-
-}
+*/
 
 func (r InmemoryUsersRepository) Save() error {
-
+	fmt.Println("Save on inmemory repo")
+	return nil
 }
 
-_ UserRepository = (*InmemoryUsersRepository)(nil)
+// _ userD.UserRepository = (*InmemoryUsersRepository)(nil)

@@ -1,13 +1,16 @@
-package users
+package infrastructure
+
+import "fmt"
 
 type MongoUsersRepository struct {
-	//users //array de usuarios. 
+	//users //array de usuarios.
 }
 
-func NewMongoUsersRepository () MongoUsersRepository {
+func NewMongoUsersRepository() MongoUsersRepository {
 	return MongoUsersRepository{}
 }
 
+/*
 func (r MongoUsersRepository) Find() User {
 
 }
@@ -15,9 +18,10 @@ func (r MongoUsersRepository) Find() User {
 func (r MongoUsersRepository) FindBy() {
 
 }
-
+*/
 func (r MongoUsersRepository) Save() error {
-
+	fmt.Println("Save in mongo repo")
+	return nil
 }
 
-_ UserRepository = (*MongoUsersRepository)(nil)
+//_ UserRepository = (*MongoUsersRepository)(nil)

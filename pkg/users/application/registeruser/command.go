@@ -13,7 +13,7 @@ type Command struct {
 	password  string
 }
 
-func NewCommand(firstName, lastName, email, password string) Command {
+func NewCommand(firstName, lastName, email, password string) commandbus.Command {
 	return Command{
 		firstName: firstName,
 		lastName:  lastName,
@@ -25,3 +25,5 @@ func NewCommand(firstName, lastName, email, password string) Command {
 func (c Command) Type() commandbus.Type {
 	return COMMMAND_TYPE
 }
+
+var _ commandbus.Command = (*Command)(nil)

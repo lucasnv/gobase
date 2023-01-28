@@ -18,8 +18,6 @@ services:
       - "seccomp:unconfined"
     cap_add:
       - SYS_PTRACE  
-
-
       
 networks:
   <CONTAINER_NAME_REPLACE>_network:

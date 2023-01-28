@@ -3,22 +3,23 @@ package registeruser
 import (
 	"context"
 
-	"<MODULE_URL_REPLACE>/pkg/shared/infrastructure/commandbus"
 	internalError "<MODULE_URL_REPLACE>/pkg/shared/domain/errors"
 	"<MODULE_URL_REPLACE>/pkg/shared/domain/valueobjects"
-	users "<MODULE_URL_REPLACE>/pkg/users/domain"
+	"<MODULE_URL_REPLACE>/pkg/shared/infrastructure/commandbus"
+	"<MODULE_URL_REPLACE>/pkg/users/domain"
 )
 
 type CommandHandler struct {
-	service Service
+	Service Service
 }
 
+/*
 func NewCommandHandler(service Service) CommandHandler {
 	return CommandHandler{
 		service: service,
 	}
 }
-
+*/
 // TODO : Data sanitization
 func (h CommandHandler) Handle(ctx context.Context, cmd commandbus.Command) error {
 
@@ -34,31 +35,31 @@ func (h CommandHandler) Handle(ctx context.Context, cmd commandbus.Command) erro
 		return err
 	}
 
-	firstName, err := users.NewFirstName(command.firstName)
+	firstName, err := domain.NewFirstName(command.firstName)
 
 	if err != nil {
 		return err
 	}
 
-	lastName, err := users.NewLastName(command.lastName)
+	lastName, err := domain.NewLastName(command.lastName)
 
 	if err != nil {
 		return err
 	}
 
-	email, err := users.NewEmail(command.email)
+	email, err := domain.NewEmail(command.email)
 
 	if err != nil {
 		return err
 	}
 
-	password, err := users.NewPassword(command.password)
+	password, err := domain.NewPassword(command.password)
 
 	if err != nil {
 		return err
 	}
 
-	return h.service.exec(
+	return h.Service.exec(
 		ctx,
 		id,
 		firstName,

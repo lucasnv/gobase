@@ -18,7 +18,7 @@ type Server struct {
 func InitializeServer(address string, cm commandbus.CommandBus) {
 	engine := gin.Default()
 
-	engine.Use(middleware.ErrorHandler)
+	engine.Use(middleware.ErrorHandler())
 
 	server := Server{
 		engine:     engine,

@@ -2,17 +2,20 @@ package http
 
 import (
 	"<MODULE_URL_REPLACE>/http/handler/health"
+	"<MODULE_URL_REPLACE>/http/handler/users"
 )
-
-//TODO: Change this constant version to GIN GROUP ROUTE
-const VERSION = "v1"
 
 // ConfigureRoutes Configure each route with his own handler
 func ConfigureRoutes(server Server) {
 
-	// HEALTH CHECK
-	server.engine.GET("/"+VERSION+"/health-check", health.GetHealthCheckGet())
+	v1 := server.engine.Group("/v1")
+	{
+		// HEALTH CHECK
+		v1.GET("/health-check", health.GetHealthCheckGet())
+
+		// USERS HANDLERS
+		v1.POST("/users", users.PostUser(server.commandBus))
+	}
 
 	// ADD CUSTOM HANDLERS
-	//server.engine.POST("/"+VERSION+"/users", users.PostUser(server.commandBus))
 }

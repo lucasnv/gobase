@@ -1,6 +1,69 @@
 package middleware
 
 import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
+	"<MODULE_URL_REPLACE>/http/response"
+)
+
+func ErrorHandler() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Next()
+		for _, e := range c.Errors {
+			err := e.Err
+			//var errList []map[string]string
+			// var validatorErr validator.ValidationErrors
+
+			// Tengo que manejar un AppError y verificar si hay una lista de errores con el validator
+			//if err.As(err, &validatorErr) {
+			/*errList = listOfErrors(err)
+
+			c.JSON(http.StatusOK, gin.H{
+				"code":    1,
+				"message": "valor del mensaje",
+				"errors":  errList,
+			})
+			*/
+			//return
+			// }
+
+			if appErr, ok := err.(*response.AppError); ok {
+				c.JSON(http.StatusOK, gin.H{
+					"code":    appErr.Code,
+					"message": appErr.Message,
+					"errors":  appErr.Errors,
+				})
+			} else {
+
+				c.JSON(http.StatusOK, gin.H{
+					"code":    500,
+					"message": "Internal Server error",
+					"errors":  err.Error(),
+				})
+			}
+			return
+		}
+	}
+}
+
+func listOfErrors(err validator.ValidationErrors) []map[string]string {
+	InvalidFields := make([]map[string]string, 0)
+
+	for _, e := range err {
+		errors := map[string]string{}
+		errors[e.Field()] = e.Tag()
+		InvalidFields = append(InvalidFields, errors)
+	}
+
+	return InvalidFields
+}
+
+/*
+package middleware
+
+import (
 	"errors"
 
 	"github.com/gin-gonic/gin"
@@ -34,35 +97,35 @@ func ErrorHandler(ctx *gin.Context) {
 		var code uint16
 		var message string
 		var errList []map[string]string
-	*/
-	/*
-		var appErr *errorhandler.ErrorHandler
-			var validatorErr validator.ValidationErrors
+*/
+/*
+	var appErr *errorhandler.ErrorHandler
+		var validatorErr validator.ValidationErrors
 
-			//if errors.As(err, &appErr) {
-				code = appErr.Code
-				message = appErr.Msg
-				/*ctx.JSON(NO_STATUS_CODE, gin.H{
-					"code":    appErr.Code,
-					"message": appErr.Msg,
-				})
+		//if errors.As(err, &appErr) {
+			code = appErr.Code
+			message = appErr.Msg
+			/*ctx.JSON(NO_STATUS_CODE, gin.H{
+				"code":    appErr.Code,
+				"message": appErr.Msg,
+			})
 
-				return* /
-			}
+			return* /
+		}
 
-			if errors.As(err, &validatorErr) {
-				errList = listOfErrors(validatorErr)
+		if errors.As(err, &validatorErr) {
+			errList = listOfErrors(validatorErr)
 
-				/*ctx.JSON(NO_STATUS_CODE, gin.H{
-					"code":    1,
-					"message": "valor del mensaje",
-					"errors":  list,
-				})
+			/*ctx.JSON(NO_STATUS_CODE, gin.H{
+				"code":    1,
+				"message": "valor del mensaje",
+				"errors":  list,
+			})
 
-				return* /
-		 	}*/
+			return* /
+	 	}*/
 
-	/*ctx.JSON(NO_STATUS_CODE, gin.H{
+/*ctx.JSON(NO_STATUS_CODE, gin.H{
 		"code":    code,
 		"message": message,
 		"errors":  errList,
@@ -70,9 +133,9 @@ func ErrorHandler(ctx *gin.Context) {
 
 	/*ctx.JSON(NO_STATUS_CODE, gin.H{
 		"error": err.Error(),
-	})*/
+	})
 }
-
+*/
 /*
 func listOfErrors(err validator.ValidationErrors) []map[string]string {
 	InvalidFields := make([]map[string]string, 0)

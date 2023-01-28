@@ -5,17 +5,19 @@ WORKDIR /opt/app/api
 # System dependencies
 RUN apk update \
     && apk add --no-cache \
+    && apk add build-base \
     ca-certificates \
     git \
     && update-ca-certificates
+
 
 ### Development with hot reload and debugger
 FROM base AS dev
 
 WORKDIR /opt/app/api
 
-# Download app libs
-#RUN go mod download
+### In order tu to make easear the debuger configuration using vscode
+COPY launch.json /opt/app/.vscode/launch.json
 
 # Install tools
 RUN curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s latest
@@ -30,6 +32,7 @@ RUN go install github.com/cosmtrek/air@latest
 # Script for init dlv debugging
 COPY bin/init_debugging.sh /usr/local/bin/debug
 RUN chmod +x /usr/local/bin/debug
+RUN export GOFLAGS=-buildvcs=false
 
 EXPOSE 8080
 EXPOSE 2345
@@ -58,7 +61,7 @@ RUN apk update \
     && update-ca-certificates
 
 # Copy executable
-COPY --from=builder /app/api /usr/local/bin/api
+COPY --from=builder /opt/app/api /usr/local/bin/api
 EXPOSE 8080
 
 ENTRYPOINT ["/usr/local/bin/api"]

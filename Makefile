@@ -9,7 +9,7 @@ MODULE_URL="<MODULE_URL_REPLACE>"
 # Build step, generates the binary.
 .PHONY: build
 build:
-	go build ${LDFLAGS} -o ${BINARY} cmd/main.go
+	go build -buildvcs=false ${LDFLAGS} -o ${BINARY} cmd/main.go
 
 # Download the go lint. Not running anything.
 .PHONY: lint-prepare
@@ -63,3 +63,8 @@ in:
 .PHONY: fmt
 fmt:
 	docker-compose run ${CONTAINER_NAME} gofmt -w .
+
+.PHONY: generate-wire
+generate-wire:
+	@clear
+	docker-compose run --rm ${CONTAINER_NAME} cd cmd/di && go run github.com/google/wire/cmd/wire

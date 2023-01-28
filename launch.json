@@ -1,0 +1,34 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Local: Attach to local Process into the Docker container",
+            "type": "go",
+            "request": "attach",
+            "mode": "local",
+            "showLog": true,
+            "processId": "${command:pickGoProcess}"
+        },
+        {
+            "name": "Remote: Attach to the running container",
+            "type": "go",
+            "mode": "remote",
+            "request": "attach",
+            "host": "0.0.0.0",
+            "port": 2345,
+            "trace": "verbose",
+            "asRoot": true,
+            "showLog": true,
+            //"remotePath": "${workspaceRoot}",
+            "substitutePath": [
+                {
+                    "from": "[PATH OF YOUR PROJECT IN YOUR LOCAL MACHINE]",
+                    "to": "/opt/app/api/",
+                },
+            ]
+        }
+    ]
+}

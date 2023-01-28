@@ -1,15 +1,24 @@
 package config
 
 import (
-	"github.com/joho/godotenv"
 	"log"
+	"os"
+	"path/filepath"
+
+	"github.com/joho/godotenv"
 )
 
 // InitializeDotEnv Load ENV file
 func InitializeDotEnv() {
-	err := godotenv.Load()
+	execPath, err := os.Executable()
 
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Fatal("Error setting execPath > " + err.Error())
+	}
+
+	err = godotenv.Load(filepath.Dir(execPath) + "/../.env")
+
+	if err != nil {
+		log.Fatal("Error loading .env file > " + err.Error())
 	}
 }

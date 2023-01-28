@@ -37,6 +37,11 @@ You can execute any command using makefile, the following command described belo
 - make build
 - make lint-prepare
 
+### Work with Visual Studio Code and the container
+
+- First of all you have to open a remote window and then attach to running container (you have to take into account, you will be able work only when your container will be up and running, make start)
+- If is the first time that you work on this mode you going to have to install for sure a visual studio code plugin for golang into the container
+
 ## TODO
 
 - I have to finish to create an example to create an user, and get an user. I have to implement mongo and memory storage
@@ -45,3 +50,7 @@ You can execute any command using makefile, the following command described belo
 - move http server to share/infrastructure
 - Create a folde into cmd folder one per entrypoint (api, cli, etc)
 - Take a look on make commands like lint-prepare and lint (make a intallation and it's not necesary)
+
+## Configurate .vscode to debug
+
+- We have created a launch.json file in order to help you with VScode's configuration
