@@ -26,10 +26,6 @@ RUN curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/in
 RUN go install golang.org/x/tools/gopls@latest
 RUN go install -ldflags "-s -w -extldflags '-static'" github.com/go-delve/delve/cmd/dlv@latest
 
-# Install DI
-RUN cd /opt/app/api/cmd/di && go run github.com/google/wire/cmd/wire
-RUN cd /opt/app/api/
-
 # Hot reloading mod
 RUN go install github.com/cosmtrek/air@latest
 
