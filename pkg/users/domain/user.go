@@ -50,7 +50,7 @@ func NewLastName(value string) (LastName, errors.App) {
 	validate := validation.New()
 
 	if err := validate.Var("last_name", value, "required,alpha,lte=50"); err != nil {
-		return LastName{}, newUserError(INVALID_USER, err)
+		return LastName{}, NewUserError(INVALID_USER, err)
 	}
 
 	return LastName{value: value}, nil
@@ -60,7 +60,7 @@ func NewEmail(value string) (Email, errors.App) {
 	validate := validation.New()
 
 	if err := validate.Var("email", value, "required,email"); err != nil {
-		return Email{}, newUserError(INVALID_USER, err)
+		return Email{}, NewUserError(INVALID_USER, err)
 	}
 
 	return Email{value: value}, nil
