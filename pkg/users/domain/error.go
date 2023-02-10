@@ -1,8 +1,6 @@
 package domain
 
 import (
-	"strconv"
-
 	"<MODULE_URL_REPLACE>/pkg/shared/domain/errors"
 	"<MODULE_URL_REPLACE>/pkg/shared/domain/validator"
 )
@@ -21,7 +19,7 @@ func NewUserError(c errors.ErrCode, ve ...validator.ValidationError) *errors.App
 
 	if ve != nil {
 		for i, v := range ve {
-			error.AddError(v.Field()+strconv.Itoa(i), v.Error())
+			error.AddError(v.Field(), v.Error())
 		}
 	}
 
