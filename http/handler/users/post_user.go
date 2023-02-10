@@ -26,11 +26,10 @@ func PostUser(cb commandbus.CommandBus) gin.HandlerFunc {
 		}
 
 		// Command Dispatcher
-		/*if err := cb.Dispatch(ctx, getCommand(req)); err != nil {
-			fmt.Println(err)
-			//response.WithError(ctx, http.StatusBadRequest, err)
+		if err := cb.Dispatch(ctx, getCommand(req)); err != nil {
+			response.AppError(ctx, err)
 			return
-		}*/
+		}
 
 		// Return Json response
 		response.Success(ctx)

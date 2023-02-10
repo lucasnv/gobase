@@ -2,6 +2,8 @@ package commandbus
 
 import (
 	"context"
+
+	"<MODULE_URL_REPLACE>/pkg/shared/domain/errors"
 )
 
 // CommandBus is an in-memory implementation of the command.Bus.
@@ -17,7 +19,7 @@ func NewInMemoryCommandBus() *InMemoryCommandBus {
 }
 
 // Dispatch implements the command.Bus interface.
-func (cb *InMemoryCommandBus) Dispatch(ctx context.Context, cmd Command) error {
+func (cb *InMemoryCommandBus) Dispatch(ctx context.Context, cmd Command) errors.App {
 	handler, ok := cb.handlers[cmd.Type()]
 
 	if !ok {

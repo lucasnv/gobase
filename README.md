@@ -20,6 +20,8 @@ This is GoLang base structure. It works as a good starting point to create a GoL
 
 > Golang V1.19.5
 
+> VsCode pre-installed
+
 ## Useful commands
 
 You can execute any command using makefile, the following command described below are available.
@@ -45,12 +47,14 @@ You can execute any command using makefile, the following command described belo
 ## TODO
 
 - I have to finish to create an example to create an user, and get an user. I have to implement mongo and memory storage
-- Delete tool boundedcontext.
-- delete internal folder and move everything into share/infrastructure
 - move http server to share/infrastructure
-- Create a folde into cmd folder one per entrypoint (api, cli, etc)
+- Create a folder into cmd folder one per entrypoint (api, cli, etc)
 - Take a look on make commands like lint-prepare and lint (make a intallation and it's not necesary)
 
 ## Configurate .vscode to debug
 
 - We have created a launch.json file in order to help you with VScode's configuration
+
+## Good practices
+
+- The recommended way to organize a Go file is to start with package declaration and import statements, followed by constants, variables, types, functions, and interfaces in that order.

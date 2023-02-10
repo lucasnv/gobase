@@ -3,7 +3,7 @@ package registeruser
 import (
 	"context"
 
-	internalError "<MODULE_URL_REPLACE>/pkg/shared/domain/errors"
+	"<MODULE_URL_REPLACE>/pkg/shared/domain/errors"
 	"<MODULE_URL_REPLACE>/pkg/shared/domain/valueobjects"
 	"<MODULE_URL_REPLACE>/pkg/shared/infrastructure/commandbus"
 	"<MODULE_URL_REPLACE>/pkg/users/domain"
@@ -21,12 +21,13 @@ func NewCommandHandler(service Service) CommandHandler {
 }
 */
 // TODO : Data sanitization
-func (h CommandHandler) Handle(ctx context.Context, cmd commandbus.Command) error {
+func (h CommandHandler) Handle(ctx context.Context, cmd commandbus.Command) errors.App {
 
 	command, ok := cmd.(Command)
 
 	if !ok {
-		return internalError.NewUnexpectedCommand()
+
+		// return internalError.NewUnexpectedCommand()
 	}
 
 	id, err := valueobjects.GenerateNewId()

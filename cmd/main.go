@@ -17,13 +17,6 @@ func main() {
 	config.InitializeDotEnv()
 
 	// DEPENDENCY INJECTION
-
-	// Repository
-	//userRepository := userI.NewInmemoryUsersRepository()
-
-	// Services
-	//registerUserService := registeruser.NewService(userRepository)
-
 	// Handlers
 	registerUserCommandHandler := di.Wire()
 	//registeruser.NewCommandHandler(registerUserService)

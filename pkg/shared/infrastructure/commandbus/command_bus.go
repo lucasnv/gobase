@@ -2,16 +2,18 @@ package commandbus
 
 import (
 	"context"
-)
 
-// Bus defines the expected behaviour from a command bus.
-type CommandBus interface {
-	Dispatch(context.Context, Command) error
-	Register(Type, Handler)
-}
+	"<MODULE_URL_REPLACE>/pkg/shared/domain/errors"
+)
 
 // Type represents an application command type.
 type Type string
+
+// Bus defines the expected behaviour from a command bus.
+type CommandBus interface {
+	Dispatch(context.Context, Command) errors.App
+	Register(Type, Handler)
+}
 
 // Command represents an application command.
 type Command interface {
@@ -20,5 +22,5 @@ type Command interface {
 
 // Handler defines the expected behaviour from a command handler.
 type Handler interface {
-	Handle(context.Context, Command) error
+	Handle(context.Context, Command) errors.App
 }
