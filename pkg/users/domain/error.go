@@ -18,7 +18,7 @@ func NewUserError(c errors.ErrCode, ve ...validator.ValidationError) *errors.App
 	}
 
 	if ve != nil {
-		for i, v := range ve {
+		for _, v := range ve {
 			error.AddError(v.Field(), v.Error())
 		}
 	}
