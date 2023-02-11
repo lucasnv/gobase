@@ -7,7 +7,7 @@ import (
 	"<MODULE_URL_REPLACE>/pkg/shared/domain/valueobjects"
 	"<MODULE_URL_REPLACE>/pkg/shared/infrastructure/validation"
 )
-
+// TODO: Finish user implementation ex: value objects validation
 type (
 	FirstName struct {
 		value string
