@@ -49,7 +49,6 @@ You can execute any command using makefile, the following command described belo
 - Finish DI wire implementing
 - I have to finish to create an example to create an user, and get an user. I have to implement mongo and memory storage
 - move http server to share/infrastructure
-- Create a folder into cmd folder one per entrypoint (api, cli, etc)
 - Take a look on make commands like lint-prepare and lint (make a intallation and it's not necesary)
 - Resolve todo comments
 

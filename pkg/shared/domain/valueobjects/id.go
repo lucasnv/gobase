@@ -6,13 +6,19 @@ import (
 	"<MODULE_URL_REPLACE>/pkg/shared/domain/errors"
 )
 
-// GENERIC ID VALUE OBJECT
+// Generic Id Value Object
 type Id struct {
 	value uuid.UUID
 }
 
-func NewId(value uuid.UUID) (Id, errors.App) {
-	return Id{value: value}, nil
+func NewId(value string) (Id, errors.App) {
+	u, err := uuid.Parse(value)
+
+	if err != nil {
+		return Id{value: uuid.New()}, errors.NewAppError(errors.INVALID_UUID_ERROR)
+	}
+
+	return Id{value: u}, nil
 }
 
 func GenerateNewId() (Id, errors.App) {

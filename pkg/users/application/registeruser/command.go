@@ -1,10 +1,10 @@
 package registeruser
 
 import (
-	"<MODULE_URL_REPLACE>/pkg/shared/infrastructure/commandbus"
+	"<MODULE_URL_REPLACE>/pkg/shared/domain/commandbus"
 )
 
-const COMMMAND_TYPE commandbus.Type = "command.registering.user"
+const COMMAND_TYPE commandbus.Type = "command.registering.user"
 
 type Command struct {
 	firstName string
@@ -23,7 +23,7 @@ func NewCommand(firstName, lastName, email, password string) commandbus.Command 
 }
 
 func (c Command) Type() commandbus.Type {
-	return COMMMAND_TYPE
+	return COMMAND_TYPE
 }
 
 var _ commandbus.Command = (*Command)(nil)

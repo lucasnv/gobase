@@ -1,9 +1,8 @@
 package domain
 
+import vo "<MODULE_URL_REPLACE>/pkg/shared/domain/valueobjects"
+
 type UserRepository interface {
-	/*
-		Find() User
-		FindBy()
-	*/
-	Save() error
+	Save(u User) error
+	Find(id vo.Id) User
 }

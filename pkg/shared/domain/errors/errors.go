@@ -1,13 +1,14 @@
 package errors
 
 const (
-	UNKNOWN_CODE                  = 0
-	BAD_REQUEST_CODE              = 10
-	UNAUTHORIZED_CODE             = 11
-	FORBIDDEN_CODE                = 12
-	NOT_FOUND_CODE                = 13
-	INNER_ERROR_CODE              = 14
-	UNEXPECTED_COMMAND_ERROR_CODE = 15
+	UNKNOWN_CODE             = 0
+	BAD_REQUEST_CODE         = 10
+	UNAUTHORIZED_CODE        = 11
+	FORBIDDEN_CODE           = 12
+	NOT_FOUND_CODE           = 13
+	INNER_ERROR_CODE         = 14
+	UNEXPECTED_COMMAND_ERROR = 15
+	INVALID_UUID_ERROR       = 16
 )
 
 type ErrCode uint16
@@ -61,7 +62,7 @@ func getErrorMessage(c ErrCode) string {
 		return "Server cannot find the requested resource."
 	case UNAUTHORIZED_CODE:
 		return "Client needs authentication to get requested resource"
-	case UNEXPECTED_COMMAND_ERROR_CODE:
+	case UNEXPECTED_COMMAND_ERROR:
 		return "Unexpected command."
 	case UNKNOWN_CODE:
 		return "Unknown error."

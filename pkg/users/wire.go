@@ -1,10 +1,11 @@
-package di
+package users
 
 import (
 	"sync"
 
 	"github.com/google/wire"
-	"<MODULE_URL_REPLACE>/pkg/shared/infrastructure/commandbus"
+	
+	"<MODULE_URL_REPLACE>/pkg/shared/domain/commandbus"
 	"<MODULE_URL_REPLACE>/pkg/users/application/registeruser"
 	"<MODULE_URL_REPLACE>/pkg/users/domain"
 	"<MODULE_URL_REPLACE>/pkg/users/infrastructure"

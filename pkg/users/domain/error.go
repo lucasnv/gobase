@@ -7,8 +7,9 @@ import (
 
 // Users' errors goes from 1000 to 1999
 const (
-	UNKNOWN_USER_ERROR = 1000
-	INVALID_USER       = 1001
+	UNKNOWN_USER_ERROR    = 1000
+	INVALID_USER_ERROR    = 1001
+	REPOSITORY_USER_ERROR = 1002
 )
 
 func NewUserError(c errors.ErrCode, ve ...validator.ValidationError) *errors.AppError {
@@ -28,10 +29,12 @@ func NewUserError(c errors.ErrCode, ve ...validator.ValidationError) *errors.App
 
 func getErrorMessage(c errors.ErrCode) string {
 	switch c {
-	case INVALID_USER:
+	case INVALID_USER_ERROR:
 		return "BC USER: cannot process the request due to something wrong with the data."
 	case UNKNOWN_USER_ERROR:
 		return "BC USER: Unknown user error."
+	case REPOSITORY_USER_ERROR:
+		return "BC USER: There was a problema in user repository."
 	default:
 		return "BC USER: Unknown user error."
 	}

@@ -1,23 +1,27 @@
 package infrastructure
 
 import (
-	"fmt"
-	//domain "<MODULE_URL_REPLACE>/pkg/users/domain"
+	vo "<MODULE_URL_REPLACE>/pkg/shared/domain/valueobjects"
+	user "<MODULE_URL_REPLACE>/pkg/users/domain"
 )
 
 type InmemoryUsersRepository struct {
-	//users //array de usuarios.
+	users []user.User
 }
 
-/*
-func NewInmemoryUsersRepository() InmemoryUsersRepository {
-	return InmemoryUsersRepository{}
+func NewInmemoryUsersRepository() *InmemoryUsersRepository {
+	return &InmemoryUsersRepository{}
 }
-*/
 
-func (r InmemoryUsersRepository) Save() error {
-	fmt.Println("Save on inmemory repo")
+func (r InmemoryUsersRepository) Save(u user.User) error {
+	r.users = append(r.users, u)
+
 	return nil
 }
 
-// _ userD.UserRepository = (*InmemoryUsersRepository)(nil)
+// TODO: Ver si el repo tiene que ser un puntero para poder almacenar los usuarios
+func (r InmemoryUsersRepository) Find(id vo.Id) user.User {
+	return r.users[0]
+}
+
+var _ user.UserRepository = (*InmemoryUsersRepository)(nil)

@@ -52,7 +52,7 @@ func getHttpCodeByAppErr(code appError.ErrCode) int {
 		return http.StatusInternalServerError
 
 	// Mapping user bc errors
-	case userDomain.INVALID_USER:
+	case userDomain.INVALID_USER_ERROR:
 		return http.StatusBadRequest
 
 	// Default response

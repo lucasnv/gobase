@@ -7,14 +7,15 @@
 package di
 
 import (
+	"<MODULE_URL_REPLACE>/pkg/users"
 	"<MODULE_URL_REPLACE>/pkg/users/application/registeruser"
 )
 
 // Injectors from wire.go:
 
 func Wire() registeruser.CommandHandler {
-	inmemoryUsersRepository := NewInmemoryUsersRepository()
-	service := NewRegisterUserService(inmemoryUsersRepository)
-	commandHandler := NewRegisterUserCommandHandler(service)
+	inmemoryUsersRepository := users.NewInmemoryUsersRepository()
+	service := users.NewRegisterUserService(inmemoryUsersRepository)
+	commandHandler := users.NewRegisterUserCommandHandler(service)
 	return commandHandler
 }

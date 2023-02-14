@@ -9,7 +9,7 @@ MODULE_URL="<MODULE_URL_REPLACE>"
 # Build step, generates the binary.
 .PHONY: build
 build:
-	go build -buildvcs=false ${LDFLAGS} -o ${BINARY} cmd/main.go
+	go build -buildvcs=false ${LDFLAGS} -o ${BINARY} cmd/api/main.go
 
 # Download the go lint. Not running anything.
 .PHONY: lint-prepare

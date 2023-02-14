@@ -4,11 +4,11 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"<MODULE_URL_REPLACE>/http/response"
-	"<MODULE_URL_REPLACE>/pkg/shared/infrastructure/commandbus"
+	"<MODULE_URL_REPLACE>/pkg/shared/domain/commandbus"
 	"<MODULE_URL_REPLACE>/pkg/users/application/registeruser"
 )
 
-type request struct {
+type postUserRequest struct {
 	FirstName string `json:"first_name" binding:"required"`
 	LastName  string `json:"last_name" binding:"required"`
 	Email     string `json:"email" binding:"required,email"`
@@ -17,7 +17,7 @@ type request struct {
 
 func PostUser(cb commandbus.CommandBus) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		var req request
+		var req postUserRequest
 
 		// Validation request
 		if err := ctx.ShouldBind(&req); err != nil {
@@ -26,7 +26,7 @@ func PostUser(cb commandbus.CommandBus) gin.HandlerFunc {
 		}
 
 		// Command Dispatcher
-		if err := cb.Dispatch(ctx, getCommand(req)); err != nil {
+		if _, err := cb.Dispatch(ctx, getPostUserCommand(req)); err != nil {
 			response.AppError(ctx, err)
 			return
 		}
@@ -36,7 +36,7 @@ func PostUser(cb commandbus.CommandBus) gin.HandlerFunc {
 	}
 }
 
-func getCommand(req request) commandbus.Command {
+func getPostUserCommand(req postUserRequest) commandbus.Command {
 	return registeruser.NewCommand(
 		req.FirstName,
 		req.LastName,
