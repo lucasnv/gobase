@@ -67,4 +67,4 @@ fmt:
 .PHONY: generate-wire
 generate-wire:
 	@clear
-	docker-compose run --rm ${CONTAINER_NAME} cd cmd/di && go run github.com/google/wire/cmd/wire
+	docker-compose run --rm ${CONTAINER_NAME} cd cmd/di && go get github.com/google/wire/cmd/wire && go run github.com/google/wire/cmd/wire ./cmd/api/di

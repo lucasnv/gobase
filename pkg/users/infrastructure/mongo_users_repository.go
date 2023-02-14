@@ -15,16 +15,7 @@ func NewMongoUsersRepository() MongoUsersRepository {
 	return MongoUsersRepository{}
 }
 
-/*
-func (r MongoUsersRepository) Find() User {
-
-}
-
-func (r MongoUsersRepository) FindBy() {
-
-}
-*/
-func (r MongoUsersRepository) Save(u user.User) error {
+func (r *MongoUsersRepository) Save(u user.User) error {
 	fmt.Println("Save in mongo repo")
 	return nil
 }

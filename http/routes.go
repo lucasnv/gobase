@@ -15,6 +15,7 @@ func ConfigureRoutes(server Server) {
 
 		// USERS HANDLERS
 		v1.POST("/users", users.PostUser(server.commandBus))
+		v1.GET("/users/:id", users.GetUser(server.commandBus))
 	}
 
 	// ADD CUSTOM HANDLERS

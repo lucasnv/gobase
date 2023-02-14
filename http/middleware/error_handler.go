@@ -60,3 +60,5 @@ func getHttpCodeByAppErr(code appError.ErrCode) int {
 		return http.StatusNotImplemented
 	}
 }
+
+// TODO: I have to map all errors

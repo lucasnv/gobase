@@ -51,6 +51,7 @@ You can execute any command using makefile, the following command described belo
 - move http server to share/infrastructure
 - Take a look on make commands like lint-prepare and lint (make a intallation and it's not necesary)
 - Resolve todo comments
+- Ver todos los news si tengo que devolver un puntero
 
 ## Configurate .vscode to debug
 

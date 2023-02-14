@@ -19,7 +19,7 @@ func NewCommandHandler(s Service) *CommandHandler {
 	}
 }
 
-func (h CommandHandler) Handle(ctx context.Context, cmd commandbus.Command) (commandbus.Reponse, errors.App) {
+func (h *CommandHandler) Handle(ctx context.Context, cmd commandbus.Command) (commandbus.Reponse, errors.App) {
 
 	command, ok := cmd.(Command)
 

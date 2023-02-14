@@ -13,7 +13,15 @@ type Service struct {
 	UserRepository user.UserRepository
 }
 
-func (s Service) exec(ctx context.Context, id valueobjects.Id) (commandbus.Reponse, errors.App) {
+func NewService(r user.UserRepository) *Service {
+	return &Service{
+		UserRepository: r,
+	}
+}
+
+// TODO: aca falta determinar si tengo que usar el contexto para los erores o implemento el error de forma tradcional
+// El 404 es un error, tambien pudo tener el error de que no se puede acceder al repositorio
+func (s *Service) exec(ctx context.Context, id valueobjects.Id) (commandbus.Reponse, errors.App) {
 
 	user := s.UserRepository.Find(id)
 
@@ -22,5 +30,5 @@ func (s Service) exec(ctx context.Context, id valueobjects.Id) (commandbus.Repon
 			return user.NewUserError(user.REPOSITORY_USER_ERROR)
 		}
 	*/
-	return user, nil
+	return NewUserResponse(user), nil
 }

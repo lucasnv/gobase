@@ -10,13 +10,11 @@ import (
 	appError "<MODULE_URL_REPLACE>/pkg/shared/domain/errors"
 )
 
-/*
-	GET: 200 OK
-	POST: 201 Created
-	PUT: 200 OK
-	PATCH: 200 OK
-	DELETE: 204 No Content
-*/
+//	GET: 200 OK
+//	POST: 201 Created
+//	PUT: 200 OK
+//	PATCH: 200 OK
+//	DELETE: 204 No Content
 
 // 200	OK	The request has succeeded.
 // 201	Created	The request has succeeded and a new resource has been created as a result of it.
@@ -28,64 +26,63 @@ import (
 // 404	Not Found	Server cannot find the requested resource.
 // 5XX	Server Errors	Server encountered an unexpected condition.
 
-/*
-**********************************
+
+/**********************************
 > Success response type examples <
-**********************************
+***********************************/
 
-- Single Data -
----------------
+//           Single Data 
+// *******************************
+//	{
+//		"data": {
+//			"first_name": "Lucas",
+//			"last_name": "Vazquez",
+//			"email": "lucasnvazquez@gmail.com"
+//			"created_at": "2020-12-10 12:34:56 UTC"
+//		}
+//	}
 
-	{
-		"data": {
-			"first_name": "Lucas",
-			"last_name": "Vazquez",
-			"email": "lucasnvazquez@gmail.com"
-			"created_at": "2020-12-10 12:34:56 UTC"
-		}
-	}
+//              List 
+// *******************************
+//	{
+//		"data": [
+//			{
+//				"first_name": "Lucas",
+//				"last_name": "Vazquez",
+//				"email": "lucasnvazquez@gmail.com"
+//				"created_at": "2020-12-10 12:34:56 UTC"
+//			},
+//			{
+//				"first_name": "Jorge",
+//				"last_name": "Caruzo",
+//				"email": "jorgecaruzo@gmail.com"
+//				"created_at": "2021-10-11 12:34:56 UTC"
+//			}
+//		]
+//	}
 
-- List -
---------
+/***********************************
+>   Error response type examples   <
+************************************/
 
-	{
-		"data": [
-			{
-				"first_name": "Lucas",
-				"last_name": "Vazquez",
-				"email": "lucasnvazquez@gmail.com"
-				"created_at": "2020-12-10 12:34:56 UTC"
-			},
-			{
-				"first_name": "Jorge",
-				"last_name": "Caruzo",
-				"email": "jorgecaruzo@gmail.com"
-				"created_at": "2021-10-11 12:34:56 UTC"
-			}
-		]
-	}
+//         Single error 
+// *******************************
+//	{
+//		"code": 1001
+//		"message" : "El usuario no existe"
+//	}
 
-********************************
-> Error response type examples <
-********************************
-- Single error -
+//        Multi fields error 
+// *******************************
+//	{
+//		"code": 10
+//		"message" : "Invalid fields"
+//		"errors": [
+//			"first_name": "required",
+//			"last_name": "required",
+//		]
+//	}
 
-	{
-		"code": 1001
-		"message" : "El usuario no existe"
-	}
-
-- Multi fields error -
-
-	{
-		"code": 10
-		"message" : "Invalid fields"
-		"errors": [
-			"first_name": "required",
-			"last_name": "required",
-		]
-	}
-*/
 
 func Success(ctx *gin.Context) {
 	ctx.Status(http.StatusOK)
@@ -95,6 +92,11 @@ func Created(ctx *gin.Context) {
 	ctx.Status(http.StatusCreated)
 }
 
+func SuccessWithData(ctx *gin.Context, data interface{}) {
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": data,
+	})
+}
 func GenericError(ctx *gin.Context, err error) {
 	var appErr = appError.NewAppError(appError.UNKNOWN_CODE)
 	ctx.Error(appErr)

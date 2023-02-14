@@ -11,6 +11,10 @@ type Id struct {
 	value uuid.UUID
 }
 
+func (i *Id) Value() string {
+	return i.value.String()
+}
+
 func NewId(value string) (Id, errors.App) {
 	u, err := uuid.Parse(value)
 

@@ -26,7 +26,9 @@ func PostUser(cb commandbus.CommandBus) gin.HandlerFunc {
 		}
 
 		// Command Dispatcher
-		if _, err := cb.Dispatch(ctx, getPostUserCommand(req)); err != nil {
+		_, err := cb.Dispatch(ctx, getPostUserCommand(req))
+
+		if err != nil {
 			response.AppError(ctx, err)
 			return
 		}

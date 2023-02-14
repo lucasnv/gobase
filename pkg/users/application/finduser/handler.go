@@ -12,15 +12,13 @@ type CommandHandler struct {
 	Service Service
 }
 
-/*
-func NewCommandHandler(service Service) CommandHandler {
-	return CommandHandler{
-		service: service,
+func NewCommandHandler(s Service) *CommandHandler {
+	return &CommandHandler{
+		Service: s,
 	}
 }
-*/
 
-func (h CommandHandler) Handle(ctx context.Context, cmd commandbus.Command) (commandbus.Reponse, errors.App) {
+func (h *CommandHandler) Handle(ctx context.Context, cmd commandbus.Command) (commandbus.Reponse, errors.App) {
 
 	command, ok := cmd.(Command)
 

@@ -8,25 +8,27 @@ import (
 	"<MODULE_URL_REPLACE>/pkg/shared/infrastructure/validation"
 )
 
-// TODO: Finish user implementation ex: value objects validation
+// Value Objects
 type (
 	FirstName struct {
-		value string
+		Value string
 	}
 
 	LastName struct {
-		value string
+		Value string
 	}
 
 	Email struct {
-		value string
+		Value string
 	}
 
 	Password struct {
-		value string
+		Value string
 	}
 )
 
+// TODO: Tengo que hacer un value object con el tiempo y para todos los value object tengo que implemenar
+// El atributo value
 type User struct {
 	id        valueobjects.Id
 	firstName FirstName
@@ -37,6 +39,30 @@ type User struct {
 	updateAt  time.Time
 }
 
+func (u *User) Id() valueobjects.Id {
+	return u.id
+}
+
+func (u *User) FirstName() FirstName {
+	return u.firstName
+}
+
+func (u *User) LastName() LastName {
+	return u.lastName
+}
+
+func (u *User) Email() Email {
+	return u.email
+}
+
+func (u *User) Password() Password {
+	return u.password
+}
+
+func (u *User) CreatedAt() time.Time {
+	return u.createdAt
+}
+
 func NewFirstName(value string) (FirstName, errors.App) {
 	validate := validation.New()
 
@@ -44,7 +70,7 @@ func NewFirstName(value string) (FirstName, errors.App) {
 		return FirstName{}, NewUserError(INVALID_USER_ERROR, err)
 	}
 
-	return FirstName{value: value}, nil
+	return FirstName{Value: value}, nil
 }
 
 func NewLastName(value string) (LastName, errors.App) {
@@ -54,7 +80,7 @@ func NewLastName(value string) (LastName, errors.App) {
 		return LastName{}, NewUserError(INVALID_USER_ERROR, err)
 	}
 
-	return LastName{value: value}, nil
+	return LastName{Value: value}, nil
 }
 
 func NewEmail(value string) (Email, errors.App) {
@@ -64,19 +90,17 @@ func NewEmail(value string) (Email, errors.App) {
 		return Email{}, NewUserError(INVALID_USER_ERROR, err)
 	}
 
-	return Email{value: value}, nil
+	return Email{Value: value}, nil
 }
 
 func NewPassword(value string) (Password, errors.App) {
-	//	validate := validation.New()
+	validate := validation.New()
 
-	//	err := validate.Var("password", value, "required,gte=8")
-
-	if value == "" {
-		//	return Password{}, err
+	if err := validate.Var("password", value, "required,min=4,max=15"); err != nil {
+		return Password{}, NewUserError(INVALID_USER_ERROR, err)
 	}
 
-	return Password{value: value}, nil
+	return Password{Value: value}, nil
 }
 
 func NewUser(id valueobjects.Id, firstName FirstName, lastName LastName, email Email, password Password) User {

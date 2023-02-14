@@ -64,6 +64,8 @@ func getErrorMessage(c ErrCode) string {
 		return "Client needs authentication to get requested resource"
 	case UNEXPECTED_COMMAND_ERROR:
 		return "Unexpected command."
+	case INVALID_UUID_ERROR:
+		return "Invalid Id."
 	case UNKNOWN_CODE:
 		return "Unknown error."
 	default:

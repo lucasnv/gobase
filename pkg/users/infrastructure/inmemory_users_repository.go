@@ -13,14 +13,13 @@ func NewInmemoryUsersRepository() *InmemoryUsersRepository {
 	return &InmemoryUsersRepository{}
 }
 
-func (r InmemoryUsersRepository) Save(u user.User) error {
+func (r *InmemoryUsersRepository) Save(u user.User) error {
 	r.users = append(r.users, u)
 
 	return nil
 }
 
-// TODO: Ver si el repo tiene que ser un puntero para poder almacenar los usuarios
-func (r InmemoryUsersRepository) Find(id vo.Id) user.User {
+func (r *InmemoryUsersRepository) Find(id vo.Id) user.User {
 	return r.users[0]
 }
 
