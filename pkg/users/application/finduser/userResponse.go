@@ -7,14 +7,18 @@ type UserReponse struct {
 	FirstName string
 	LastName  string
 	Email     string
+	CreatedAt string
 }
 
-// TODO: REtornar id de usuario
 func NewUserResponse(u domain.User) *UserReponse {
+	id := u.Id()
+	createdAt := u.CreatedAt()
+
 	return &UserReponse{
-		//Id:        u.Id().Value(),
+		Id:        id.ToString(),
 		FirstName: u.FirstName().Value,
 		LastName:  u.LastName().Value,
 		Email:     u.Email().Value,
+		CreatedAt: createdAt.ToString(),
 	}
 }

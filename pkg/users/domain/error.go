@@ -10,6 +10,7 @@ const (
 	UNKNOWN_USER_ERROR    = 1000
 	INVALID_USER_ERROR    = 1001
 	REPOSITORY_USER_ERROR = 1002
+	NOT_FOUND_ERROR       = 1003
 )
 
 func NewUserError(c errors.ErrCode, ve ...validator.ValidationError) *errors.AppError {
@@ -35,6 +36,8 @@ func getErrorMessage(c errors.ErrCode) string {
 		return "BC USER: Unknown user error."
 	case REPOSITORY_USER_ERROR:
 		return "BC USER: There was a problema in user repository."
+	case NOT_FOUND_ERROR:
+		return "BC USER: User not found."
 	default:
 		return "BC USER: Unknown user error."
 	}

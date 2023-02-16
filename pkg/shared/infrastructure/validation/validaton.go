@@ -24,7 +24,7 @@ func (e V10ValidationError) Error() string {
 func (e V10ValidationError) Field() string {
 	return e.fieldValue
 }
-//TODO: ver si tengo que devolver un puntero mejor
+
 func New() validator.Validator {
 	return V10Validator{
 		service: v10.New(),

@@ -1,9 +1,8 @@
-package finduser
+package deleteuser
 
 import (
 	"context"
 
-	"<MODULE_URL_REPLACE>/pkg/shared/domain/commandbus"
 	"<MODULE_URL_REPLACE>/pkg/shared/domain/errors"
 	"<MODULE_URL_REPLACE>/pkg/shared/domain/valueobjects"
 	user "<MODULE_URL_REPLACE>/pkg/users/domain"
@@ -19,13 +18,13 @@ func NewService(r user.UserRepository) *Service {
 	}
 }
 
-func (s *Service) exec(ctx context.Context, id valueobjects.Id) (commandbus.Reponse, errors.App) {
+func (s *Service) exec(ctx context.Context, id valueobjects.Id) errors.App {
 
-	user, err := s.UserRepository.Find(id)
+	err := s.UserRepository.Delete(id)
 
 	if err != nil {
-		return UserReponse{}, err
+		return err
 	}
 
-	return NewUserResponse(*user), nil
+	return nil
 }

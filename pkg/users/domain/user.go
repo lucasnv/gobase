@@ -1,10 +1,8 @@
 package domain
 
 import (
-	"time"
-
 	"<MODULE_URL_REPLACE>/pkg/shared/domain/errors"
-	"<MODULE_URL_REPLACE>/pkg/shared/domain/valueobjects"
+	vo "<MODULE_URL_REPLACE>/pkg/shared/domain/valueobjects"
 	"<MODULE_URL_REPLACE>/pkg/shared/infrastructure/validation"
 )
 
@@ -27,19 +25,17 @@ type (
 	}
 )
 
-// TODO: Tengo que hacer un value object con el tiempo y para todos los value object tengo que implemenar
-// El atributo value
 type User struct {
-	id        valueobjects.Id
+	id        vo.Id
 	firstName FirstName
 	lastName  LastName
 	email     Email
 	password  Password
-	createdAt time.Time
-	updateAt  time.Time
+	createdAt vo.CustomTime
+	updateAt  vo.CustomTime
 }
 
-func (u *User) Id() valueobjects.Id {
+func (u *User) Id() vo.Id {
 	return u.id
 }
 
@@ -59,7 +55,7 @@ func (u *User) Password() Password {
 	return u.password
 }
 
-func (u *User) CreatedAt() time.Time {
+func (u *User) CreatedAt() vo.CustomTime {
 	return u.createdAt
 }
 
@@ -103,14 +99,14 @@ func NewPassword(value string) (Password, errors.App) {
 	return Password{Value: value}, nil
 }
 
-func NewUser(id valueobjects.Id, firstName FirstName, lastName LastName, email Email, password Password) User {
+func NewUser(id vo.Id, firstName FirstName, lastName LastName, email Email, password Password) User {
 	return User{
 		id:        id,
 		firstName: firstName,
 		lastName:  lastName,
 		email:     email,
 		password:  password,
-		createdAt: time.Now().UTC(),
-		updateAt:  time.Now().UTC(),
+		createdAt: vo.NewTime(),
+		updateAt:  vo.NewTime(),
 	}
 }

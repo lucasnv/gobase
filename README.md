@@ -46,12 +46,14 @@ You can execute any command using makefile, the following command described belo
 
 ## TODO
 
-- Finish DI wire implementing
-- I have to finish to create an example to create an user, and get an user. I have to implement mongo and memory storage
-- move http server to share/infrastructure
+- Implement delete
+- Implement patch or update
+- Implement list with filters
+- Implement mongo
+- Implement sentry
+- Implement events
+- Move http server to share/infrastructure
 - Take a look on make commands like lint-prepare and lint (make a intallation and it's not necesary)
-- Resolve todo comments
-- Ver todos los news si tengo que devolver un puntero
 
 ## Configurate .vscode to debug
 

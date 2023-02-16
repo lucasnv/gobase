@@ -9,6 +9,8 @@ import (
 // Type represents an application command type.
 type Type string
 
+type Handlers map[Type]Handler
+
 // Command represents an application command.
 type Command interface {
 	Type() Type

@@ -40,25 +40,29 @@ func getHttpCodeByAppErr(code appError.ErrCode) int {
 	switch code {
 
 	// Mapping generic app errors
-	case appError.BAD_REQUEST_CODE:
+	case appError.BAD_REQUEST_ERROR:
 		return http.StatusBadRequest
-	case appError.UNAUTHORIZED_CODE:
+	case appError.UNAUTHORIZED_ERROR:
 		return http.StatusUnauthorized
-	case appError.FORBIDDEN_CODE:
+	case appError.FORBIDDEN_ERROR:
 		return http.StatusForbidden
-	case appError.NOT_FOUND_CODE:
+	case appError.NOT_FOUND_ERROR:
 		return http.StatusNotFound
-	case appError.INNER_ERROR_CODE:
+	case appError.INNER_ERROR:
 		return http.StatusInternalServerError
 
 	// Mapping user bc errors
 	case userDomain.INVALID_USER_ERROR:
 		return http.StatusBadRequest
+	case userDomain.UNKNOWN_USER_ERROR:
+		return http.StatusInternalServerError
+	case userDomain.REPOSITORY_USER_ERROR:
+		return http.StatusInternalServerError
+	case userDomain.NOT_FOUND_ERROR:
+		return http.StatusNotFound
 
 	// Default response
 	default:
 		return http.StatusNotImplemented
 	}
 }
-
-// TODO: I have to map all errors

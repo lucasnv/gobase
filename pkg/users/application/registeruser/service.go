@@ -25,7 +25,7 @@ func (s *Service) exec(ctx context.Context, id valueobjects.Id, fn user.FirstNam
 	err := s.UserRepository.Save(newUser)
 
 	if err != nil {
-		return user.NewUserError(user.REPOSITORY_USER_ERROR)
+		return err
 	}
 
 	return nil

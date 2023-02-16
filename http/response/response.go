@@ -26,12 +26,11 @@ import (
 // 404	Not Found	Server cannot find the requested resource.
 // 5XX	Server Errors	Server encountered an unexpected condition.
 
-
 /**********************************
 > Success response type examples <
 ***********************************/
 
-//           Single Data 
+//           Single Data
 // *******************************
 //	{
 //		"data": {
@@ -42,7 +41,7 @@ import (
 //		}
 //	}
 
-//              List 
+//              List
 // *******************************
 //	{
 //		"data": [
@@ -65,14 +64,14 @@ import (
 >   Error response type examples   <
 ************************************/
 
-//         Single error 
+//         Single error
 // *******************************
 //	{
 //		"code": 1001
 //		"message" : "El usuario no existe"
 //	}
 
-//        Multi fields error 
+//        Multi fields error
 // *******************************
 //	{
 //		"code": 10
@@ -83,7 +82,6 @@ import (
 //		]
 //	}
 
-
 func Success(ctx *gin.Context) {
 	ctx.Status(http.StatusOK)
 }
@@ -92,20 +90,24 @@ func Created(ctx *gin.Context) {
 	ctx.Status(http.StatusCreated)
 }
 
+func NoContent(ctx *gin.Context) {
+	ctx.Status(http.StatusNoContent)
+}
+
 func SuccessWithData(ctx *gin.Context, data interface{}) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"data": data,
 	})
 }
 func GenericError(ctx *gin.Context, err error) {
-	var appErr = appError.NewAppError(appError.UNKNOWN_CODE)
+	var appErr = appError.NewAppError(appError.UNKNOWN_ERROR)
 	ctx.Error(appErr)
 }
 
 // TODO: I have to delete the v10 Lib dependency implementing my validation
 func BadRequest(ctx *gin.Context, err error) {
 	var validatorErr v10.ValidationErrors
-	var appErr *appError.AppError = appError.NewAppError(appError.BAD_REQUEST_CODE)
+	var appErr *appError.AppError = appError.NewAppError(appError.BAD_REQUEST_ERROR)
 
 	if errors.As(err, &validatorErr) {
 		for _, field := range validatorErr {
