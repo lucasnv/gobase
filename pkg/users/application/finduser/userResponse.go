@@ -2,7 +2,7 @@ package finduser
 
 import "<MODULE_URL_REPLACE>/pkg/users/domain"
 
-type UserReponse struct {
+type UserResponse struct {
 	Id        string
 	FirstName string
 	LastName  string
@@ -10,11 +10,11 @@ type UserReponse struct {
 	CreatedAt string
 }
 
-func NewUserResponse(u domain.User) *UserReponse {
+func NewUserResponse(u domain.User) *UserResponse {
 	id := u.Id()
 	createdAt := u.CreatedAt()
 
-	return &UserReponse{
+	return &UserResponse{
 		Id:        id.ToString(),
 		FirstName: u.FirstName().Value,
 		LastName:  u.LastName().Value,

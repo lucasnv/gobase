@@ -1,11 +1,11 @@
-package finduser
+package findusers
 
 import (
 	"context"
 
 	"<MODULE_URL_REPLACE>/pkg/shared/domain/commandbus"
+	"<MODULE_URL_REPLACE>/pkg/shared/domain/criteria"
 	"<MODULE_URL_REPLACE>/pkg/shared/domain/errors"
-	"<MODULE_URL_REPLACE>/pkg/shared/domain/valueobjects"
 	user "<MODULE_URL_REPLACE>/pkg/users/domain"
 )
 
@@ -19,13 +19,13 @@ func NewService(r user.UserRepository) *Service {
 	}
 }
 
-func (s *Service) exec(ctx context.Context, id valueobjects.Id) (commandbus.Response, errors.App) {
+func (s *Service) exec(ctx context.Context, c criteria.Criteria) (commandbus.Response, errors.App) {
 
-	user, err := s.UserRepository.Find(id)
+	users, err := s.UserRepository.FindBy(c)
 
 	if err != nil {
-		return UserResponse{}, err
+		return UsersResponse{}, err
 	}
 
-	return NewUserResponse(*user), nil
+	return NewUsersResponse(*users), nil
 }

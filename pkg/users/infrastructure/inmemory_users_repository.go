@@ -1,13 +1,14 @@
 package infrastructure
 
 import (
+	"<MODULE_URL_REPLACE>/pkg/shared/domain/criteria"
 	"<MODULE_URL_REPLACE>/pkg/shared/domain/errors"
 	vo "<MODULE_URL_REPLACE>/pkg/shared/domain/valueobjects"
 	user "<MODULE_URL_REPLACE>/pkg/users/domain"
 )
 
 type InmemoryUsersRepository struct {
-	users []user.User
+	users user.UserList
 }
 
 func NewInmemoryUsersRepository() *InmemoryUsersRepository {
@@ -31,6 +32,11 @@ func (r *InmemoryUsersRepository) Find(searchedId vo.Id) (*user.User, *errors.Ap
 	}
 
 	return &user.User{}, user.NewUserError(user.NOT_FOUND_ERROR)
+}
+
+func (r *InmemoryUsersRepository) FindBy(c criteria.Criteria) (*user.Users, *errors.AppError) {
+
+	return nil, nil
 }
 
 func (r *InmemoryUsersRepository) Delete(searchedId vo.Id) *errors.AppError {

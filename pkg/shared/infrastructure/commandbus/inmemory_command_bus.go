@@ -19,7 +19,7 @@ func NewInMemoryCommandBus() *InMemoryCommandBus {
 	}
 }
 
-func (cb *InMemoryCommandBus) Dispatch(ctx context.Context, cmd commandbus.Command) (commandbus.Reponse, errors.App) {
+func (cb *InMemoryCommandBus) Dispatch(ctx context.Context, cmd commandbus.Command) (commandbus.Response, errors.App) {
 	handler, ok := cb.handlers[cmd.Type()]
 
 	if !ok {

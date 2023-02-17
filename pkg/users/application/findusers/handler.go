@@ -1,11 +1,11 @@
-package deleteuser
+package findusers
 
 import (
 	"context"
 
 	"<MODULE_URL_REPLACE>/pkg/shared/domain/commandbus"
+	"<MODULE_URL_REPLACE>/pkg/shared/domain/criteria"
 	"<MODULE_URL_REPLACE>/pkg/shared/domain/errors"
-	"<MODULE_URL_REPLACE>/pkg/shared/domain/valueobjects"
 )
 
 type CommandHandler struct {
@@ -26,13 +26,11 @@ func (h *CommandHandler) Handle(ctx context.Context, cmd commandbus.Command) (co
 		return nil, errors.NewAppError(errors.UNEXPECTED_COMMAND_ERROR)
 	}
 
-	uuid, err := valueobjects.NewId(command.id)
+	sortBy := criteria.NewSortBy(command.orderBy, command.orderSort)
+	filters := criteria.NewFilters(command.filter)
+	criteria := criteria.NewCriteria(filters, sortBy, criteria.Offset(command.page), criteria.Limit(command.perPage))
 
-	if err != nil {
-		return nil, err
-	}
-
-	return nil, h.Service.exec(ctx, uuid)
+	return h.Service.exec(ctx, *criteria)
 }
 
 var _ commandbus.Handler = (*CommandHandler)(nil)

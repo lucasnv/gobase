@@ -17,16 +17,16 @@ type Command interface {
 }
 
 // Response represent a struct with the information
-type Reponse interface {
+type Response interface {
 }
 
 // Bus defines the expected behaviour from a command bus.
 type CommandBus interface {
-	Dispatch(context.Context, Command) (Reponse, errors.App)
+	Dispatch(context.Context, Command) (Response, errors.App)
 	Register(Type, Handler)
 }
 
 // Handler defines the expected behaviour from a command handler.
 type Handler interface {
-	Handle(context.Context, Command) (Reponse, errors.App)
+	Handle(context.Context, Command) (Response, errors.App)
 }
