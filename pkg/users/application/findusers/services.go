@@ -19,13 +19,13 @@ func NewService(r user.UserRepository) *Service {
 	}
 }
 
-func (s *Service) exec(ctx context.Context, c criteria.Criteria) (commandbus.Response, errors.App) {
+func (s *Service) exec(ctx *context.Context, c criteria.Criteria) (commandbus.Response, errors.App) {
 
-	users, err := s.UserRepository.FindBy(c)
+	users, err := s.UserRepository.FindByCriteria(ctx, c)
 
 	if err != nil {
 		return UsersResponse{}, err
 	}
 
-	return NewUsersResponse(*users), nil
+	return NewUsersResponse(users), nil
 }

@@ -1,14 +1,17 @@
 package errors
 
 const (
-	UNKNOWN_ERROR            = 0
-	BAD_REQUEST_ERROR        = 10
-	UNAUTHORIZED_ERROR       = 11
-	FORBIDDEN_ERROR          = 12
-	NOT_FOUND_ERROR          = 13
-	INNER_ERROR              = 14
-	UNEXPECTED_COMMAND_ERROR = 15
-	INVALID_UUID_ERROR       = 16
+	UNKNOWN_ERROR                 = 0
+	BAD_REQUEST_ERROR             = 10
+	UNAUTHORIZED_ERROR            = 11
+	FORBIDDEN_ERROR               = 12
+	NOT_FOUND_ERROR               = 13
+	INNER_ERROR                   = 14
+	UNEXPECTED_COMMAND_ERROR      = 15
+	INVALID_UUID_ERROR            = 16
+	MALFORMED_FILTER_ERROR        = 17
+	INVALID_OPERATOR_FILTER_ERROR = 18
+	INVALID_CRITERIA_ERROR        = 19
 )
 
 type ErrCode uint16
@@ -65,6 +68,12 @@ func getErrorMessage(c ErrCode) string {
 		return "Unexpected command."
 	case INVALID_UUID_ERROR:
 		return "Invalid Id."
+	case MALFORMED_FILTER_ERROR:
+		return "Server cannot process the filter check the correct format. It must be something like: ?filter=[criteria]::[operator]::[parameters],[criteria]::[operator]::[parameters]."
+	case INVALID_OPERATOR_FILTER_ERROR:
+		return "Server cannot process the filter, you have use an invalid operator."
+	case INVALID_CRITERIA_ERROR:
+		return "Server cannot process the filter, you have use an invalid criteria."
 	case UNKNOWN_ERROR:
 		return "Unknown error."
 	default:

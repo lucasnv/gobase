@@ -18,11 +18,11 @@ func NewService(r user.UserRepository) *Service {
 	}
 }
 
-func (s *Service) exec(ctx context.Context, id valueobjects.Id, fn user.FirstName, ln user.LastName, e user.Email, p user.Password) errors.App {
+func (s *Service) exec(ctx *context.Context, id valueobjects.Id, fn user.FirstName, ln user.LastName, e user.Email, p user.Password) errors.App {
 
 	var newUser user.User = user.NewUser(id, fn, ln, e, p)
 
-	err := s.UserRepository.Save(newUser)
+	err := s.UserRepository.Save(ctx, newUser)
 
 	if err != nil {
 		return err

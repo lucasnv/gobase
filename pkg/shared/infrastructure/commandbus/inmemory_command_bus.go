@@ -1,8 +1,7 @@
 package commandbus
 
 import (
-	"context"
-
+	"github.com/gin-gonic/gin"
 	"<MODULE_URL_REPLACE>/pkg/shared/domain/commandbus"
 	"<MODULE_URL_REPLACE>/pkg/shared/domain/errors"
 )
@@ -19,14 +18,16 @@ func NewInMemoryCommandBus() *InMemoryCommandBus {
 	}
 }
 
-func (cb *InMemoryCommandBus) Dispatch(ctx context.Context, cmd commandbus.Command) (commandbus.Response, errors.App) {
+func (cb *InMemoryCommandBus) Dispatch(ctx *gin.Context, cmd commandbus.Command) (commandbus.Response, errors.App) {
 	handler, ok := cb.handlers[cmd.Type()]
+
+	c := ctx.Request.Context()
 
 	if !ok {
 		return nil, errors.NewAppError(errors.UNEXPECTED_COMMAND_ERROR)
 	}
 
-	return handler.Handle(ctx, cmd)
+	return handler.Handle(&c, cmd)
 }
 
 func (b *InMemoryCommandBus) Register(t commandbus.Type, h commandbus.Handler) {

@@ -1,6 +1,6 @@
 package domain
 
-type UserList []User
+type List []User
 
 type Metadata struct {
 	page       int
@@ -11,15 +11,15 @@ type Metadata struct {
 
 type Users struct {
 	metadata Metadata
-	data     UserList
+	data     List
 }
 
-func (u *Users) Data() UserList {
+func (u *Users) Data() List {
 	return u.data
 }
 
-func newUsers(u UserList) *Users {
-	return &Users{
+func NewUsers(u List) Users {
+	return Users{
 		data: u,
 	}
 }

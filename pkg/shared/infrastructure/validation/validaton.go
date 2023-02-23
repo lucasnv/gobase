@@ -31,7 +31,7 @@ func New() validator.Validator {
 	}
 }
 
-func (v V10Validator) Var(field string, value interface{}, rules string) validator.ValidationError {
+func (v V10Validator) Var(field string, value any, rules string) validator.ValidationError {
 	err := v.service.Var(value, rules)
 	var validatorErr v10.ValidationErrors
 

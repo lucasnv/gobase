@@ -46,11 +46,8 @@ You can execute any command using makefile, the following command described belo
 
 ## TODO
 
-- Implement delete
 - Implement patch or update
-- Implement list with filters
 - Implement mongo
-- Implement sentry
 - Implement events
 - Move http server to share/infrastructure
 - Take a look on make commands like lint-prepare and lint (make a intallation and it's not necesary)
@@ -61,4 +58,12 @@ You can execute any command using makefile, the following command described belo
 
 ## Good practices
 
-- The recommended way to organize a Go file is to start with package declaration and import statements, followed by constants, variables, types, functions, and interfaces in that order.
+- The recommended way to organize a Go file is to start with:
+
+1. package declaration
+2. import statements
+3. constants
+4. variables
+5. types
+6. functions
+7. interfaces

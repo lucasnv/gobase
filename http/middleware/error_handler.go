@@ -50,6 +50,12 @@ func getHttpCodeByAppErr(code appError.ErrCode) int {
 		return http.StatusNotFound
 	case appError.INNER_ERROR:
 		return http.StatusInternalServerError
+	case appError.MALFORMED_FILTER_ERROR:
+		return http.StatusBadRequest
+	case appError.INVALID_OPERATOR_FILTER_ERROR:
+		return http.StatusBadRequest
+	case appError.INVALID_CRITERIA_ERROR:
+		return http.StatusBadRequest
 
 	// Mapping user bc errors
 	case userDomain.INVALID_USER_ERROR:

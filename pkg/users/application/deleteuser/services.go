@@ -18,9 +18,9 @@ func NewService(r user.UserRepository) *Service {
 	}
 }
 
-func (s *Service) exec(ctx context.Context, id valueobjects.Id) errors.App {
+func (s *Service) exec(ctx *context.Context, id valueobjects.Id) errors.App {
 
-	err := s.UserRepository.Delete(id)
+	err := s.UserRepository.Delete(ctx, id)
 
 	if err != nil {
 		return err

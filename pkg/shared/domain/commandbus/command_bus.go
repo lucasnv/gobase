@@ -3,6 +3,7 @@ package commandbus
 import (
 	"context"
 
+	"github.com/gin-gonic/gin"
 	"<MODULE_URL_REPLACE>/pkg/shared/domain/errors"
 )
 
@@ -22,11 +23,11 @@ type Response interface {
 
 // Bus defines the expected behaviour from a command bus.
 type CommandBus interface {
-	Dispatch(context.Context, Command) (Response, errors.App)
-	Register(Type, Handler)
+	Dispatch(ctx *gin.Context, c Command) (Response, errors.App)
+	Register(t Type, h Handler)
 }
 
 // Handler defines the expected behaviour from a command handler.
 type Handler interface {
-	Handle(context.Context, Command) (Response, errors.App)
+	Handle(ctx *context.Context, c Command) (Response, errors.App)
 }

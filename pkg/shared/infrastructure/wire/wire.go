@@ -1,11 +1,12 @@
 package wire
 
 import (
+	"<MODULE_URL_REPLACE>/pkg/shared/infrastructure/criteria"
 	"<MODULE_URL_REPLACE>/pkg/users/application/deleteuser"
 	"<MODULE_URL_REPLACE>/pkg/users/application/finduser"
 	"<MODULE_URL_REPLACE>/pkg/users/application/findusers"
-	"<MODULE_URL_REPLACE>/pkg/users/application/registeruser"
-	"<MODULE_URL_REPLACE>/pkg/users/infrastructure"
+	"<MODULE_URL_REPLACE>
+	"<MODULE_URL_REPLACE>/infrastructure"
 )
 
 type Wire struct {
@@ -17,6 +18,10 @@ type Wire struct {
 }
 
 func Setup() *Wire {
+	// Generics
+	criteria, _ := criteria.NewInmemoryBuilder()
+
+	// Repositories
 	userRepository := infrastructure.NewInmemoryUsersRepository()
 
 	// Register User
@@ -29,7 +34,7 @@ func Setup() *Wire {
 
 	// Find Users
 	findUsersService := findusers.NewService(userRepository)
-	findUsersCommandHandler := findusers.NewCommandHandler(*findUsersService)
+	findUsersCommandHandler := findusers.NewCommandHandler(*findUsersService, criteria)
 
 	// Delete User
 	deleteUserService := deleteuser.NewService(userRepository)

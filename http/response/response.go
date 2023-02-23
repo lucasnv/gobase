@@ -94,7 +94,7 @@ func NoContent(ctx *gin.Context) {
 	ctx.Status(http.StatusNoContent)
 }
 
-func SuccessWithData(ctx *gin.Context, data interface{}) {
+func SuccessWithData(ctx *gin.Context, data any) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"data": data,
 	})

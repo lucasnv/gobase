@@ -5,11 +5,11 @@ import "<MODULE_URL_REPLACE>/pkg/users/domain"
 type UsersResponse []userResponse
 
 type userResponse struct {
-	Id        string
-	FirstName string
-	LastName  string
-	Email     string
-	CreatedAt string
+	Id        string `json:"id"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Email     string `json:"email"`
+	CreatedAt string `json:"created_at"`
 }
 
 func NewUsersResponse(users domain.Users) UsersResponse {
@@ -26,7 +26,6 @@ func NewUsersResponse(users domain.Users) UsersResponse {
 			Email:     u.Email().Value,
 			CreatedAt: createdAt.ToString(),
 		})
-
 	}
 
 	return response

@@ -10,11 +10,11 @@ type UserResponse struct {
 	CreatedAt string
 }
 
-func NewUserResponse(u domain.User) *UserResponse {
+func NewUserResponse(u domain.User) UserResponse {
 	id := u.Id()
 	createdAt := u.CreatedAt()
 
-	return &UserResponse{
+	return UserResponse{
 		Id:        id.ToString(),
 		FirstName: u.FirstName().Value,
 		LastName:  u.LastName().Value,
