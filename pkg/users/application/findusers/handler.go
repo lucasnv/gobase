@@ -21,6 +21,9 @@ func NewCommandHandler(s Service, cb criteria.Builder) *CommandHandler {
 }
 
 func (h *CommandHandler) Handle(ctx *context.Context, cmd commandbus.Command) (commandbus.Response, errors.App) {
+	var finalCriteria criteria.Criteria
+	var qtyCriteria int
+
 	command, ok := cmd.(Command)
 
 	if !ok {
@@ -32,9 +35,6 @@ func (h *CommandHandler) Handle(ctx *context.Context, cmd commandbus.Command) (c
 	if err != nil {
 		return nil, err
 	}
-
-	var finalCriteria criteria.Criteria
-	var qtyCriteria int
 
 	for _, filter := range filters.Filters {
 
@@ -92,43 +92,3 @@ func (h *CommandHandler) GetCriteriaByFilter(filter criteria.Filter) (criteria.C
 	return criteria, nil
 
 }
-
-/*
-	if email := filters.GetFilter("email"); email != nil {
-
-		if email.Operator != "eq" {
-			return UsersResponse{}, errors.NewAppError(errors.INVALID_OPERATOR_FILTER_ERROR)
-		}
-
-		emailCriteria = h.CriteriaBuilder.Eq("email", email.Parameters[0])
-	}
-
-	if firstName := filters.GetFilter("first_name"); firstName != nil {
-
-		if email.Operator != "eq" {
-			return UsersResponse{}, errors.NewAppError(errors.INVALID_OPERATOR_FILTER_ERROR)
-		}
-
-		emailCriteria = h.CriteriaBuilder.Eq("email", email.Parameters[0])
-	}
-
-	if createdAt := filters.GetFilter("created_at"); createdAt != nil {
-		var err errors.App
-		createdAtCriteria, err = h.GetCriteriaByFilter(*createdAt)
-
-		if err != nil {
-			return UsersResponse{}, err
-		}
-
-	} else {
-		now := time.Now().UTC()
-		daysAgo := now.AddDate(0, 0, -15)
-		createdAtCriteria = h.CriteriaBuilder.Gte("created_at", daysAgo.Format(time.RFC3339))
-	}
-
-	if emailCriteria != nil {
-		criteria = h.CriteriaBuilder.And(emailCriteria, createdAtCriteria)
-	} else {
-		criteria = createdAtCriteria
-	}
-*/
