@@ -5,8 +5,8 @@ import (
 	"<MODULE_URL_REPLACE>/pkg/users/application/deleteuser"
 	"<MODULE_URL_REPLACE>/pkg/users/application/finduser"
 	"<MODULE_URL_REPLACE>/pkg/users/application/findusers"
-	"<MODULE_URL_REPLACE>
-	"<MODULE_URL_REPLACE>/infrastructure"
+	"<MODULE_URL_REPLACE>/pkg/users/application/registeruser"
+	"<MODULE_URL_REPLACE>/pkg/users/infrastructure"
 )
 
 type Wire struct {
