@@ -41,7 +41,7 @@ func (h *CommandHandler) Handle(ctx *context.Context, cmd commandbus.Command) (c
 		criteria, err := h.GetCriteriaByFilter(filter)
 
 		if err != nil {
-			return UsersResponse{}, errors.NewAppError(errors.INVALID_OPERATOR_FILTER_ERROR)
+			return UsersResponse{}, err
 		}
 
 		if qtyCriteria == 0 {
@@ -83,6 +83,10 @@ func (h *CommandHandler) GetCriteriaByFilter(filter criteria.Filter) (criteria.C
 		criteria = h.CriteriaBuilder.Like(filter.Field, filter.Parameters[0])
 
 	case "between":
+		if len(filter.Parameters) != 2 {
+			return criteria, errors.NewAppError(errors.MALFORMED_FILTER_ERROR)
+		}
+
 		criteria = h.CriteriaBuilder.Between(filter.Field, filter.Parameters)
 
 	default:

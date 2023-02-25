@@ -2,7 +2,9 @@ package infrastructure
 
 import (
 	"context"
+	"fmt"
 	"strings"
+	"time"
 
 	"<MODULE_URL_REPLACE>/pkg/shared/domain/criteria"
 	"<MODULE_URL_REPLACE>/pkg/shared/domain/errors"
@@ -72,6 +74,7 @@ func (r *InmemoryUsersRepository) Delete(ctx *context.Context, searchedId vo.Id)
 
 func filterByCriteria(u user.User, c criteria.Criteria) bool {
 	filter := c.Filter()
+
 	switch filter.(string) {
 
 	case "and":
@@ -79,28 +82,66 @@ func filterByCriteria(u user.User, c criteria.Criteria) bool {
 		return filterByCriteria(u, andCriteria.C1) && filterByCriteria(u, andCriteria.C2)
 
 	case "between":
-		between := c.(inmemoryCriteria.BetweenInmemoryCriteria)
-		value := getValueByField(u, between.Field)
-		return value.(int) <= between.V1.(int) && between.V2.(int) <= value.(int)
+		betweenCriteria := c.(inmemoryCriteria.BetweenInmemoryCriteria)
+
+		if betweenCriteria.Field == "created_at" {
+			dateValue := getDateValueByField(u, betweenCriteria.Field).Truncate(time.Minute)
+			dateToCompare1, err := time.Parse(time.RFC3339, betweenCriteria.V1.(string))
+			if err != nil {
+				fmt.Println(err)
+			}
+			dateToCompare1 = dateToCompare1.Truncate(time.Minute)
+			dateToCompare2, _ := time.Parse(time.RFC3339, betweenCriteria.V2.(string))
+			dateToCompare2 = dateToCompare2.Truncate(time.Minute)
+
+			return (dateValue.After(dateToCompare1) || dateValue.Equal(dateToCompare1)) && (dateValue.Before(dateToCompare2) || dateValue.Equal(dateToCompare2))
+		}
+
+		return false
 
 	case "eq":
 		eqCriteria := c.(inmemoryCriteria.EqInmemoryCriteria)
-		value := getValueByField(u, eqCriteria.Field)
+
+		if eqCriteria.Field == "created_at" {
+			dateValue := getDateValueByField(u, eqCriteria.Field).Truncate(time.Minute)
+			dateToCompare, _ := time.Parse(time.RFC3339, eqCriteria.Value.(string))
+			dateToCompare = dateToCompare.Truncate(time.Minute)
+
+			return dateValue.Equal(dateToCompare)
+		}
+
+		value := getStringValueByField(u, eqCriteria.Field)
 		return value == eqCriteria.Value
 
 	case "gt":
 		gtCriteria := c.(inmemoryCriteria.GtInmemoryCriteria)
-		value := getValueByField(u, gtCriteria.Field)
-		return value.(int) < gtCriteria.Value.(int)
+
+		if gtCriteria.Field == "created_at" {
+			dateValue := getDateValueByField(u, gtCriteria.Field).Truncate(time.Minute)
+			dateToCompare, _ := time.Parse(time.RFC3339, gtCriteria.Value.(string))
+			dateToCompare = dateToCompare.Truncate(time.Minute)
+
+			return dateValue.After(dateToCompare)
+		}
+
+		return false
 
 	case "gte":
 		gteCriteria := c.(inmemoryCriteria.GteInmemoryCriteria)
-		value := getValueByField(u, gteCriteria.Field)
-		return value.(int) <= gteCriteria.Value.(int)
+
+		if gteCriteria.Field == "created_at" {
+			dateValue := getDateValueByField(u, gteCriteria.Field).Truncate(time.Minute)
+			dateToCompare, _ := time.Parse(time.RFC3339, gteCriteria.Value.(string))
+			dateToCompare = dateToCompare.Truncate(time.Minute)
+
+			return dateValue.After(dateToCompare) || dateValue.Equal(dateToCompare)
+		}
+
+		return false
 
 	case "in":
 		inCriteria := c.(inmemoryCriteria.InInmemoryCriteria)
-		value := getValueByField(u, inCriteria.Field)
+		value := getStringValueByField(u, inCriteria.Field)
 		for _, criteriaValue := range inCriteria.Value.([]any) {
 			if criteriaValue == value {
 				return true
@@ -110,21 +151,37 @@ func filterByCriteria(u user.User, c criteria.Criteria) bool {
 
 	case "like":
 		likeCriteria := c.(inmemoryCriteria.LikeInmemoryCriteria)
-		value := getValueByField(u, likeCriteria.Field)
-		if strings.Contains(strings.ToLower(value.(string)), strings.ToLower(likeCriteria.Value)) {
+		value := getStringValueByField(u, likeCriteria.Field)
+		if strings.Contains(strings.ToLower(value), strings.ToLower(likeCriteria.Value)) {
 			return true
 		}
 		return false
 
 	case "lt":
 		ltCriteria := c.(inmemoryCriteria.LtInmemoryCriteria)
-		value := getValueByField(u, ltCriteria.Field)
-		return value.(int) > ltCriteria.Value.(int)
+
+		if ltCriteria.Field == "created_at" {
+			dateValue := getDateValueByField(u, ltCriteria.Field).Truncate(time.Minute)
+			dateToCompare, _ := time.Parse(time.RFC3339, ltCriteria.Value.(string))
+			dateToCompare = dateToCompare.Truncate(time.Minute)
+
+			return dateValue.Before(dateToCompare)
+		}
+
+		return false
 
 	case "lte":
 		lteCriteria := c.(inmemoryCriteria.LteInmemoryCriteria)
-		value := getValueByField(u, lteCriteria.Field)
-		return value.(int) > lteCriteria.Value.(int)
+
+		if lteCriteria.Field == "created_at" {
+			dateValue := getDateValueByField(u, lteCriteria.Field).Truncate(time.Minute)
+			dateToCompare, _ := time.Parse(time.RFC3339, lteCriteria.Value.(string))
+			dateToCompare = dateToCompare.Truncate(time.Minute)
+
+			return dateValue.Before(dateToCompare) || dateValue.Equal(dateToCompare)
+		}
+
+		return false
 
 	case "or":
 		orCriteria := c.(inmemoryCriteria.OrInmemoryCriteria)
@@ -138,8 +195,7 @@ func filterByCriteria(u user.User, c criteria.Criteria) bool {
 	return true
 }
 
-func getValueByField(u user.User, field string) any {
-
+func getStringValueByField(u user.User, field string) string {
 	var value string
 
 	switch field {
@@ -151,10 +207,17 @@ func getValueByField(u user.User, field string) any {
 
 	case "last_name":
 		value = u.LastName().Value
+	}
 
+	return value
+}
+
+func getDateValueByField(u user.User, field string) time.Time {
+	var value time.Time
+
+	switch field {
 	case "created_at":
-		createdAt := u.CreatedAt()
-		value = createdAt.ToString()
+		value = u.CreatedAt().Value
 	}
 
 	return value

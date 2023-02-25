@@ -19,18 +19,27 @@ func (InmemoryBuilder) And(c1 criteria.Criteria, c2 criteria.Criteria) criteria.
 	}
 }
 
-func (InmemoryBuilder) Auth(field string, value string) criteria.Criteria {
-	return AuthInmemoryCriteria{
+func (InmemoryBuilder) Owner(field string, value string) criteria.Criteria {
+	return OwnerInmemoryCriteria{
 		Field: field,
 		Value: value,
 	}
 }
 
-func (InmemoryBuilder) Between(field string, values any) criteria.Criteria {
+func (InmemoryBuilder) Between(f string, values []string) criteria.Criteria {
+
+	if len(values) != 2 {
+		return BetweenInmemoryCriteria{
+			Field: f,
+			V1:    "",
+			V2:    "",
+		}
+	}
+
 	return BetweenInmemoryCriteria{
-		Field: field,
-		V1:    values,
-		V2:    values,
+		Field: f,
+		V1:    values[0],
+		V2:    values[1],
 	}
 }
 
@@ -55,7 +64,7 @@ func (InmemoryBuilder) Gte(field string, value any) criteria.Criteria {
 	}
 }
 
-func (InmemoryBuilder) In(field string, values any) criteria.Criteria {
+func (InmemoryBuilder) In(field string, values []string) criteria.Criteria {
 	return InInmemoryCriteria{}
 }
 
@@ -119,16 +128,16 @@ func (c AndInmemoryCriteria) Filter() interface{} {
 
 var _ criteria.Criteria = (*AndInmemoryCriteria)(nil)
 
-type AuthInmemoryCriteria struct {
+type OwnerInmemoryCriteria struct {
 	Field string
 	Value any
 }
 
-func (c AuthInmemoryCriteria) Filter() interface{} {
-	return "auth"
+func (c OwnerInmemoryCriteria) Filter() interface{} {
+	return "owner"
 }
 
-var _ criteria.Criteria = (*AuthInmemoryCriteria)(nil)
+var _ criteria.Criteria = (*OwnerInmemoryCriteria)(nil)
 
 type EqInmemoryCriteria struct {
 	Field string

@@ -16,14 +16,14 @@ func (MongoBuilder) And(c1 criteria.Criteria, c2 criteria.Criteria) criteria.Cri
 	return AndMongoCriteria{}
 }
 
-func (MongoBuilder) Auth(field string, value string) criteria.Criteria {
-	return AuthMongoCriteria{
+func (MongoBuilder) Owner(field string, value string) criteria.Criteria {
+	return OwnerMongoCriteria{
 		field: field,
 		value: value,
 	}
 }
 
-func (MongoBuilder) Between(field string, values any) criteria.Criteria {
+func (MongoBuilder) Between(field string, values []string) criteria.Criteria {
 	return BetweenMongoCriteria{}
 }
 
@@ -42,7 +42,7 @@ func (MongoBuilder) Gte(field string, value any) criteria.Criteria {
 	return GteMongoCriteria{}
 }
 
-func (MongoBuilder) In(field string, values any) criteria.Criteria {
+func (MongoBuilder) In(field string, values []string) criteria.Criteria {
 	return InMongoCriteria{}
 }
 
@@ -89,16 +89,16 @@ func (c AndMongoCriteria) Filter() interface{} {
 
 var _ criteria.Criteria = (*AndMongoCriteria)(nil)
 
-type AuthMongoCriteria struct {
+type OwnerMongoCriteria struct {
 	field string
 	value any
 }
 
-func (c AuthMongoCriteria) Filter() interface{} {
+func (c OwnerMongoCriteria) Filter() interface{} {
 	return true
 }
 
-var _ criteria.Criteria = (*AuthMongoCriteria)(nil)
+var _ criteria.Criteria = (*OwnerMongoCriteria)(nil)
 
 type EqMongoCriteria struct {
 	field string

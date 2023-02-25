@@ -112,13 +112,13 @@ type Criteria interface {
 
 type Builder interface {
 	GetFilters(filers string) (*CriteriaFilter, *errors.AppError)
-	Auth(field string, value string) Criteria
+	Owner(field string, value string) Criteria
 	And(c1 Criteria, c2 Criteria) Criteria
-	Between(field string, values any) Criteria
+	Between(field string, values []string) Criteria
 	Eq(field string, value string) Criteria
 	Gt(field string, value any) Criteria
 	Gte(field string, value any) Criteria
-	In(field string, values any) Criteria
+	In(field string, values []string) Criteria
 	Like(field string, value string) Criteria
 	Lt(field string, value any) Criteria
 	Lte(field string, value any) Criteria
