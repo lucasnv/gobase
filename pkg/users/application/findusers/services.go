@@ -19,9 +19,9 @@ func NewService(r user.UserRepository) *Service {
 	}
 }
 
-func (s *Service) exec(ctx *context.Context, c criteria.Criteria) (commandbus.Response, errors.App) {
+func (s *Service) exec(ctx *context.Context, f criteria.Criteria, o criteria.SortCriteria, p criteria.PaginatorCriteria) (commandbus.Response, errors.App) {
 
-	users, err := s.UserRepository.FindByCriteria(ctx, c)
+	users, err := s.UserRepository.FindByCriteria(ctx, f, o, p)
 
 	if err != nil {
 		return UsersResponse{}, err

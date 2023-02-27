@@ -3,6 +3,7 @@ package infrastructure
 import (
 	"context"
 	"fmt"
+	"sort"
 	"strings"
 	"time"
 
@@ -40,21 +41,24 @@ func (r *InmemoryUsersRepository) Find(ctx *context.Context, searchedId vo.Id) (
 	return user.User{}, user.NewUserError(user.NOT_FOUND_ERROR)
 }
 
-func (r *InmemoryUsersRepository) FindByCriteria(ctx *context.Context, c criteria.Criteria) (user.Users, *errors.AppError) {
+func (r *InmemoryUsersRepository) FindByCriteria(ctx *context.Context, f criteria.Criteria, o criteria.SortCriteria, p criteria.PaginatorCriteria) (user.Users, *errors.AppError) {
 	var result user.List
 
-	if c == nil {
-		return user.NewUsers(r.users), nil
-	}
+	if f != nil {
+		for _, u := range r.users {
 
-	for _, u := range r.users {
+			ok := filterByCriteria(u, f)
 
-		ok := filterByCriteria(u, c)
-
-		if ok {
-			result = append(result, u)
+			if ok {
+				result = append(result, u)
+			}
 		}
+	} else {
+		result = r.users
 	}
+
+	result = sortUsers(result, o)
+	result = paginateUsers(result, p)
 
 	return user.NewUsers(result), nil
 }
@@ -174,7 +178,8 @@ func filterByCriteria(u user.User, c criteria.Criteria) bool {
 		lteCriteria := c.(inmemoryCriteria.LteInmemoryCriteria)
 
 		if lteCriteria.Field == "created_at" {
-			dateValue := getDateValueByField(u, lteCriteria.Field).Truncate(time.Minute)
+			var dateValue time.Time = getDateValueByField(u, lteCriteria.Field)
+			dateValue = dateValue.Truncate(time.Minute)
 			dateToCompare, _ := time.Parse(time.RFC3339, lteCriteria.Value.(string))
 			dateToCompare = dateToCompare.Truncate(time.Minute)
 
@@ -221,6 +226,40 @@ func getDateValueByField(u user.User, field string) time.Time {
 	}
 
 	return value
+}
+
+func sortUsers(u user.List, o criteria.SortCriteria) user.List {
+	sort.Slice(u, func(i, j int) bool {
+
+		switch o.By() {
+		case "created_at":
+			v1 := getDateValueByField(u[i], o.By())
+			v2 := getDateValueByField(u[j], o.By())
+
+			if o.Sort() == "asc" {
+				return v1.Before(v2)
+			}
+
+			return v1.After(v2)
+
+		default:
+			v1 := getStringValueByField(u[i], o.By())
+			v2 := getStringValueByField(u[j], o.By())
+
+			if o.Sort() == "asc" {
+				return v1 < v2
+			}
+
+			return v1 > v2
+		}
+
+	})
+
+	return u
+}
+
+func paginateUsers(u user.List, c criteria.PaginatorCriteria) user.List {
+	return u
 }
 
 var _ user.UserRepository = (*InmemoryUsersRepository)(nil)

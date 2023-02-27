@@ -6,6 +6,9 @@ import (
 )
 
 type InmemoryBuilder struct {
+	order  string
+	limit  int
+	offset int
 }
 
 func (InmemoryBuilder) GetFilters(f string) (*criteria.CriteriaFilter, *errors.AppError) {
@@ -103,11 +106,14 @@ func (InmemoryBuilder) Or(c1 criteria.Criteria, c2 criteria.Criteria) criteria.C
 	}
 }
 
-func (InmemoryBuilder) Order(field string, sort string) criteria.Criteria {
-	return OrderInmemoryCriteria{}
+func (InmemoryBuilder) Sort(field string, order string) criteria.SortCriteria {
+	return SortInmemoryCriteria{
+		Field: field,
+		Order: order,
+	}
 }
 
-func (InmemoryBuilder) Paginator(page int, perPage int) criteria.Criteria {
+func (InmemoryBuilder) Paginator(page int, perPage int) criteria.PaginatorCriteria {
 	return PaginatorInmemoryCriteria{}
 }
 
@@ -239,15 +245,6 @@ func (c OrInmemoryCriteria) Filter() interface{} {
 
 var _ criteria.Criteria = (*OrInmemoryCriteria)(nil)
 
-type OrderInmemoryCriteria struct {
-}
-
-func (c OrderInmemoryCriteria) Filter() interface{} {
-	return "order"
-}
-
-var _ criteria.Criteria = (*OrderInmemoryCriteria)(nil)
-
 type PaginatorInmemoryCriteria struct {
 }
 
@@ -268,3 +265,18 @@ func (c BetweenInmemoryCriteria) Filter() interface{} {
 }
 
 var _ criteria.Criteria = (*BetweenInmemoryCriteria)(nil)
+
+type SortInmemoryCriteria struct {
+	Field string
+	Order string
+}
+
+func (c SortInmemoryCriteria) By() string {
+	return c.Field
+}
+
+func (c SortInmemoryCriteria) Sort() string {
+	return c.Order
+}
+
+var _ criteria.SortCriteria = (*SortInmemoryCriteria)(nil)

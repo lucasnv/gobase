@@ -110,6 +110,17 @@ type Criteria interface {
 	Filter() interface{}
 }
 
+type SortCriteria interface {
+	By() string
+	Sort() string
+}
+
+type PaginatorCriteria interface {
+	Filter() interface{}
+	//Limit() int
+	//Offset() int
+}
+
 type Builder interface {
 	GetFilters(filers string) (*CriteriaFilter, *errors.AppError)
 	Owner(field string, value string) Criteria
@@ -124,6 +135,6 @@ type Builder interface {
 	Lte(field string, value any) Criteria
 	Not(field string, c Criteria) Criteria
 	Or(c1 Criteria, c2 Criteria) Criteria
-	Order(field string, sort string) Criteria
-	Paginator(page int, perPage int) Criteria
+	Sort(field string, order string) SortCriteria
+	Paginator(page int, perPage int) PaginatorCriteria
 }

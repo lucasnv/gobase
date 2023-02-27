@@ -52,7 +52,10 @@ func (h *CommandHandler) Handle(ctx *context.Context, cmd commandbus.Command) (c
 		finalCriteria = h.CriteriaBuilder.And(finalCriteria, criteria)
 	}
 
-	return h.Service.exec(ctx, finalCriteria)
+	sortCriteria := h.CriteriaBuilder.Sort(command.orderBy, command.orderSort)
+	paginatorCriteria := h.CriteriaBuilder.Paginator(1, 1)
+
+	return h.Service.exec(ctx, finalCriteria, sortCriteria, paginatorCriteria)
 }
 
 var _ commandbus.Handler = (*CommandHandler)(nil)

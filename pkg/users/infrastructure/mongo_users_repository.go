@@ -27,7 +27,7 @@ func (r *MongoUsersRepository) Find(ctx *context.Context, id vo.Id) (user.User, 
 	return user.User{}, nil
 }
 
-func (r *MongoUsersRepository) FindByCriteria(ctx *context.Context, c criteria.Criteria) (user.Users, *errors.AppError) {
+func (r *MongoUsersRepository) FindByCriteria(ctx *context.Context, f criteria.Criteria, o criteria.SortCriteria, p criteria.PaginatorCriteria) (user.Users, *errors.AppError) {
 
 	return user.NewUsers(user.List{}), nil
 }

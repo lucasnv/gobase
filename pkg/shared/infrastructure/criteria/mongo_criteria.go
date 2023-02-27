@@ -66,11 +66,11 @@ func (MongoBuilder) Or(c1 criteria.Criteria, c2 criteria.Criteria) criteria.Crit
 	return OrMongoCriteria{}
 }
 
-func (MongoBuilder) Order(field string, sort string) criteria.Criteria {
-	return OrderMongoCriteria{}
+func (MongoBuilder) Sort(field string, order string) criteria.SortCriteria {
+	return SortMongoCriteria{}
 }
 
-func (MongoBuilder) Paginator(page int, perPage int) criteria.Criteria {
+func (MongoBuilder) Paginator(page int, perPage int) criteria.PaginatorCriteria {
 	return PaginatorMongoCriteria{}
 }
 
@@ -197,14 +197,20 @@ func (c OrMongoCriteria) Filter() interface{} {
 
 var _ criteria.Criteria = (*OrMongoCriteria)(nil)
 
-type OrderMongoCriteria struct {
+type SortMongoCriteria struct {
+	Field string
+	Order string
 }
 
-func (c OrderMongoCriteria) Filter() interface{} {
-	return true
+func (c SortMongoCriteria) By() string {
+	return c.Field
 }
 
-var _ criteria.Criteria = (*OrderMongoCriteria)(nil)
+func (c SortMongoCriteria) Sort() string {
+	return c.Order
+}
+
+var _ criteria.SortCriteria = (*SortMongoCriteria)(nil)
 
 type PaginatorMongoCriteria struct {
 }
