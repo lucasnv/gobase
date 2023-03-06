@@ -18,6 +18,7 @@ func ConfigureRoutes(server Server) {
 		v1.GET("/users/:id", users.GetUser(server.commandBus))
 		v1.GET("/users", users.GetUsers(server.commandBus))
 		v1.DELETE("/users/:id", users.DeleteUser(server.commandBus))
+		v1.PATCH("/users/:id", users.PatchUser(server.commandBus))
 	}
 
 	// ADD CUSTOM HANDLERS

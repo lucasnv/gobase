@@ -18,8 +18,7 @@ type Command interface {
 }
 
 // Response represent a struct with the information
-type Response interface {
-}
+type Response any
 
 // Bus defines the expected behaviour from a command bus.
 type CommandBus interface {

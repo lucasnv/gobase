@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"<MODULE_URL_REPLACE>/pkg/shared/domain/collection"
 	"<MODULE_URL_REPLACE>/pkg/shared/domain/criteria"
 	"<MODULE_URL_REPLACE>/pkg/shared/domain/errors"
 	vo "<MODULE_URL_REPLACE>/pkg/shared/domain/valueobjects"
@@ -41,7 +42,7 @@ func (r *InmemoryUsersRepository) Find(ctx *context.Context, searchedId vo.Id) (
 	return user.User{}, user.NewUserError(user.NOT_FOUND_ERROR)
 }
 
-func (r *InmemoryUsersRepository) FindByCriteria(ctx *context.Context, f criteria.Criteria, o criteria.SortCriteria, p criteria.PaginatorCriteria) (user.Users, *errors.AppError) {
+func (r *InmemoryUsersRepository) FindByCriteria(ctx *context.Context, f criteria.Criteria, o criteria.SortCriteria, p criteria.PaginatorCriteria) (collection.Collection, *errors.AppError) {
 	var result user.List
 
 	if f != nil {
@@ -57,10 +58,11 @@ func (r *InmemoryUsersRepository) FindByCriteria(ctx *context.Context, f criteri
 		result = r.users
 	}
 
+	totalUsers := len(result)
 	result = sortUsers(result, o)
 	result = paginateUsers(result, p)
 
-	return user.NewUsers(result), nil
+	return collection.NewCollection(result, p.Page(), p.PageSize(), totalUsers), nil
 }
 
 func (r *InmemoryUsersRepository) Delete(ctx *context.Context, searchedId vo.Id) *errors.AppError {
@@ -115,7 +117,7 @@ func filterByCriteria(u user.User, c criteria.Criteria) bool {
 		}
 
 		value := getStringValueByField(u, eqCriteria.Field)
-		return value == eqCriteria.Value
+		return value == strings.ToLower(eqCriteria.Value.(string))
 
 	case "gt":
 		gtCriteria := c.(inmemoryCriteria.GtInmemoryCriteria)
@@ -147,7 +149,7 @@ func filterByCriteria(u user.User, c criteria.Criteria) bool {
 		inCriteria := c.(inmemoryCriteria.InInmemoryCriteria)
 		value := getStringValueByField(u, inCriteria.Field)
 		for _, criteriaValue := range inCriteria.Value.([]any) {
-			if criteriaValue == value {
+			if criteriaValue == strings.ToLower(value) {
 				return true
 			}
 		}
@@ -156,7 +158,7 @@ func filterByCriteria(u user.User, c criteria.Criteria) bool {
 	case "like":
 		likeCriteria := c.(inmemoryCriteria.LikeInmemoryCriteria)
 		value := getStringValueByField(u, likeCriteria.Field)
-		if strings.Contains(strings.ToLower(value), strings.ToLower(likeCriteria.Value)) {
+		if strings.Contains(value, strings.ToLower(likeCriteria.Value)) {
 			return true
 		}
 		return false
@@ -214,7 +216,7 @@ func getStringValueByField(u user.User, field string) string {
 		value = u.LastName().Value
 	}
 
-	return value
+	return strings.ToLower(value)
 }
 
 func getDateValueByField(u user.User, field string) time.Time {
@@ -259,7 +261,18 @@ func sortUsers(u user.List, o criteria.SortCriteria) user.List {
 }
 
 func paginateUsers(u user.List, c criteria.PaginatorCriteria) user.List {
-	return u
+	start := c.Offset()
+	end := c.Offset() + c.Limit()
+
+	if start >= len(u) {
+		return user.List{}
+	}
+
+	if end > len(u) {
+		end = len(u)
+	}
+
+	return u[start:end]
 }
 
 var _ user.UserRepository = (*InmemoryUsersRepository)(nil)

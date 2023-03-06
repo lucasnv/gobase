@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	v10 "github.com/go-playground/validator/v10"
 
+	"<MODULE_URL_REPLACE>/pkg/shared/domain/collection"
 	appError "<MODULE_URL_REPLACE>/pkg/shared/domain/errors"
 )
 
@@ -57,7 +58,10 @@ import (
 //				"email": "jorgecaruzo@gmail.com"
 //				"created_at": "2021-10-11 12:34:56 UTC"
 //			}
-//		]
+//		],
+//      "metadata": {
+//
+//		}
 //	}
 
 /***********************************
@@ -99,6 +103,15 @@ func SuccessWithData(ctx *gin.Context, data any) {
 		"data": data,
 	})
 }
+
+func SuccessWithCollection(ctx *gin.Context, data any) {
+	c := data.(collection.Collection)
+	ctx.JSON(http.StatusOK, gin.H{
+		"data":     c.Data(),
+		"metadata": c.Metadata(),
+	})
+}
+
 func GenericError(ctx *gin.Context, err error) {
 	var appErr = appError.NewAppError(appError.UNKNOWN_ERROR)
 	ctx.Error(appErr)

@@ -3,6 +3,7 @@ package findusers
 import (
 	"context"
 
+	"<MODULE_URL_REPLACE>/pkg/shared/domain/collection"
 	"<MODULE_URL_REPLACE>/pkg/shared/domain/commandbus"
 	"<MODULE_URL_REPLACE>/pkg/shared/domain/criteria"
 	"<MODULE_URL_REPLACE>/pkg/shared/domain/errors"
@@ -24,7 +25,7 @@ func (s *Service) exec(ctx *context.Context, f criteria.Criteria, o criteria.Sor
 	users, err := s.UserRepository.FindByCriteria(ctx, f, o, p)
 
 	if err != nil {
-		return UsersResponse{}, err
+		return collection.Collection{}, err
 	}
 
 	return NewUsersResponse(users), nil

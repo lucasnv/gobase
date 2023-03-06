@@ -1,8 +1,9 @@
 package findusers
 
-import "<MODULE_URL_REPLACE>/pkg/users/domain"
-
-type UsersResponse []userResponse
+import (
+	"<MODULE_URL_REPLACE>/pkg/shared/domain/collection"
+	"<MODULE_URL_REPLACE>/pkg/users/domain"
+)
 
 type userResponse struct {
 	Id        string `json:"id"`
@@ -12,10 +13,11 @@ type userResponse struct {
 	CreatedAt string `json:"created_at"`
 }
 
-func NewUsersResponse(users domain.Users) UsersResponse {
-	var response UsersResponse
+func NewUsersResponse(c collection.Collection) collection.Collection {
+	var response []userResponse
+	users := c.Data().(domain.List)
 
-	for _, u := range users.Data() {
+	for _, u := range users {
 		id := u.Id()
 		createdAt := u.CreatedAt()
 
@@ -28,5 +30,5 @@ func NewUsersResponse(users domain.Users) UsersResponse {
 		})
 	}
 
-	return response
+	return c.SetData(response)
 }

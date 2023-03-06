@@ -116,9 +116,10 @@ type SortCriteria interface {
 }
 
 type PaginatorCriteria interface {
-	Filter() interface{}
-	//Limit() int
-	//Offset() int
+	Limit() int
+	Offset() int
+	Page() int
+	PageSize() int
 }
 
 type Builder interface {

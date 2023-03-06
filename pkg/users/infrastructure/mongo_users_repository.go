@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"<MODULE_URL_REPLACE>/pkg/shared/domain/collection"
 	"<MODULE_URL_REPLACE>/pkg/shared/domain/criteria"
 	"<MODULE_URL_REPLACE>/pkg/shared/domain/errors"
 	vo "<MODULE_URL_REPLACE>/pkg/shared/domain/valueobjects"
@@ -27,9 +28,9 @@ func (r *MongoUsersRepository) Find(ctx *context.Context, id vo.Id) (user.User, 
 	return user.User{}, nil
 }
 
-func (r *MongoUsersRepository) FindByCriteria(ctx *context.Context, f criteria.Criteria, o criteria.SortCriteria, p criteria.PaginatorCriteria) (user.Users, *errors.AppError) {
+func (r *MongoUsersRepository) FindByCriteria(ctx *context.Context, f criteria.Criteria, o criteria.SortCriteria, p criteria.PaginatorCriteria) (collection.Collection, *errors.AppError) {
 
-	return user.NewUsers(user.List{}), nil
+	return collection.Collection{}, nil
 }
 
 func (r *MongoUsersRepository) Delete(ctx *context.Context, id vo.Id) *errors.AppError {

@@ -215,11 +215,23 @@ var _ criteria.SortCriteria = (*SortMongoCriteria)(nil)
 type PaginatorMongoCriteria struct {
 }
 
-func (c PaginatorMongoCriteria) Filter() interface{} {
-	return true
+func (c PaginatorMongoCriteria) Limit() int {
+	return 10
 }
 
-var _ criteria.Criteria = (*PaginatorMongoCriteria)(nil)
+func (c PaginatorMongoCriteria) Offset() int {
+	return 1
+}
+
+func (c PaginatorMongoCriteria) Page() int {
+	return 10
+}
+
+func (c PaginatorMongoCriteria) PageSize() int {
+	return 1
+}
+
+var _ criteria.PaginatorCriteria = (*PaginatorMongoCriteria)(nil)
 
 type BetweenMongoCriteria struct {
 }

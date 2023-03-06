@@ -35,6 +35,8 @@ type User struct {
 	updateAt  vo.CustomTime
 }
 
+type List []User
+
 func (u *User) Id() vo.Id {
 	return u.id
 }

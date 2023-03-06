@@ -113,8 +113,22 @@ func (InmemoryBuilder) Sort(field string, order string) criteria.SortCriteria {
 	}
 }
 
-func (InmemoryBuilder) Paginator(page int, perPage int) criteria.PaginatorCriteria {
-	return PaginatorInmemoryCriteria{}
+func (InmemoryBuilder) Paginator(page int, pageSize int) criteria.PaginatorCriteria {
+
+	if page <= 0 {
+		page = 1
+	}
+
+	if pageSize <= 0 {
+		pageSize = 10
+	}
+
+	return PaginatorInmemoryCriteria{
+		OffsetValue:   (page - 1) * pageSize,
+		LimitValue:    pageSize,
+		PageValue:     page,
+		PageSizeValue: pageSize,
+	}
 }
 
 func NewInmemoryBuilder() (criteria.Builder, *errors.AppError) {
@@ -246,13 +260,29 @@ func (c OrInmemoryCriteria) Filter() interface{} {
 var _ criteria.Criteria = (*OrInmemoryCriteria)(nil)
 
 type PaginatorInmemoryCriteria struct {
+	LimitValue    int
+	OffsetValue   int
+	PageValue     int
+	PageSizeValue int
 }
 
-func (c PaginatorInmemoryCriteria) Filter() interface{} {
-	return "paginator"
+func (c PaginatorInmemoryCriteria) Limit() int {
+	return c.LimitValue
 }
 
-var _ criteria.Criteria = (*PaginatorInmemoryCriteria)(nil)
+func (c PaginatorInmemoryCriteria) Offset() int {
+	return c.OffsetValue
+}
+
+func (c PaginatorInmemoryCriteria) Page() int {
+	return c.PageValue
+}
+
+func (c PaginatorInmemoryCriteria) PageSize() int {
+	return c.PageSizeValue
+}
+
+var _ criteria.PaginatorCriteria = (*PaginatorInmemoryCriteria)(nil)
 
 type BetweenInmemoryCriteria struct {
 	Field string

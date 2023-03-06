@@ -11,6 +11,7 @@ import (
 	"<MODULE_URL_REPLACE>/pkg/users/application/finduser"
 	"<MODULE_URL_REPLACE>/pkg/users/application/findusers"
 	"<MODULE_URL_REPLACE>/pkg/users/application/registeruser"
+	"<MODULE_URL_REPLACE>/pkg/users/application/updateuser"
 )
 
 func main() {
@@ -37,4 +38,5 @@ func registerCommands(cb *commandbus.InMemoryCommandBus, app *wire.Wire) {
 	cb.Register(finduser.COMMAND_TYPE, &app.FindUserCommandHandler)
 	cb.Register(findusers.COMMAND_TYPE, &app.FindUsersCommandHandler)
 	cb.Register(deleteuser.COMMAND_TYPE, &app.DeleteUserCommandHandler)
+	cb.Register(updateuser.COMMAND_TYPE, &app.UpdateUserCommandHandler)
 }

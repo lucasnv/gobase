@@ -6,6 +6,7 @@ import (
 	"<MODULE_URL_REPLACE>/pkg/users/application/finduser"
 	"<MODULE_URL_REPLACE>/pkg/users/application/findusers"
 	"<MODULE_URL_REPLACE>/pkg/users/application/registeruser"
+	"<MODULE_URL_REPLACE>/pkg/users/application/updateuser"
 	"<MODULE_URL_REPLACE>/pkg/users/infrastructure"
 )
 
@@ -15,6 +16,7 @@ type Wire struct {
 	FindUserCommandHandler     finduser.CommandHandler
 	FindUsersCommandHandler    findusers.CommandHandler
 	DeleteUserCommandHandler   deleteuser.CommandHandler
+	UpdateUserCommandHandler   updateuser.CommandHandler
 }
 
 func Setup() *Wire {
@@ -40,11 +42,16 @@ func Setup() *Wire {
 	deleteUserService := deleteuser.NewService(userRepository)
 	deleteUserCommandHandler := deleteuser.NewCommandHandler(*deleteUserService)
 
+	// Update User
+	updateUserService := updateuser.NewService(userRepository)
+	updateUserCommandHandler := updateuser.NewCommandHandler(*updateUserService)
+
 	return &Wire{
 		RegisterUserCommandHandler: *registerUserCommandHandler,
 		FindUserCommandHandler:     *findUserCommandHandler,
 		FindUsersCommandHandler:    *findUsersCommandHandler,
 		DeleteUserCommandHandler:   *deleteUserCommandHandler,
+		UpdateUserCommandHandler:   *updateUserCommandHandler,
 	}
 
 }

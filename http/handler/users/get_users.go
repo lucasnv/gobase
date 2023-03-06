@@ -20,7 +20,7 @@ func GetUsers(cb commandbus.CommandBus) gin.HandlerFunc {
 		}
 
 		// Command Dispatcher
-		user, err := cb.Dispatch(ctx, getGetUsersCommand(req))
+		users, err := cb.Dispatch(ctx, getGetUsersCommand(req))
 
 		if err != nil {
 			response.AppError(ctx, err)
@@ -28,7 +28,7 @@ func GetUsers(cb commandbus.CommandBus) gin.HandlerFunc {
 		}
 
 		// Return Json response
-		response.SuccessWithData(ctx, user)
+		response.SuccessWithCollection(ctx, users)
 	}
 }
 

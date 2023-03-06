@@ -3,6 +3,7 @@ package findusers
 import (
 	"context"
 
+	"<MODULE_URL_REPLACE>/pkg/shared/domain/collection"
 	"<MODULE_URL_REPLACE>/pkg/shared/domain/commandbus"
 	"<MODULE_URL_REPLACE>/pkg/shared/domain/criteria"
 	"<MODULE_URL_REPLACE>/pkg/shared/domain/errors"
@@ -41,7 +42,7 @@ func (h *CommandHandler) Handle(ctx *context.Context, cmd commandbus.Command) (c
 		criteria, err := h.GetCriteriaByFilter(filter)
 
 		if err != nil {
-			return UsersResponse{}, err
+			return collection.Collection{}, err
 		}
 
 		if qtyCriteria == 0 {
@@ -53,7 +54,7 @@ func (h *CommandHandler) Handle(ctx *context.Context, cmd commandbus.Command) (c
 	}
 
 	sortCriteria := h.CriteriaBuilder.Sort(command.orderBy, command.orderSort)
-	paginatorCriteria := h.CriteriaBuilder.Paginator(1, 1)
+	paginatorCriteria := h.CriteriaBuilder.Paginator(command.page, command.perPage)
 
 	return h.Service.exec(ctx, finalCriteria, sortCriteria, paginatorCriteria)
 }
