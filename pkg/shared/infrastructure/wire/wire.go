@@ -1,7 +1,8 @@
 package wire
 
 import (
-	"<MODULE_URL_REPLACE>/pkg/shared/infrastructure/criteria"
+	"os"
+
 	"<MODULE_URL_REPLACE>/pkg/users/application/deleteuser"
 	"<MODULE_URL_REPLACE>/pkg/users/application/finduser"
 	"<MODULE_URL_REPLACE>/pkg/users/application/findusers"
@@ -20,11 +21,9 @@ type Wire struct {
 }
 
 func Setup() *Wire {
-	// Generics
-	criteria, _ := criteria.NewInmemoryBuilder()
-
 	// Repositories
-	userRepository := infrastructure.NewInmemoryUsersRepository()
+	//userRepository := infrastructure.NewInmemoryUsersRepository()
+	userRepository := infrastructure.NewMongoUsersRepository(os.Getenv("MONGO_DB"))
 
 	// Register User
 	registerUserService := registeruser.NewService(userRepository)
@@ -36,7 +35,7 @@ func Setup() *Wire {
 
 	// Find Users
 	findUsersService := findusers.NewService(userRepository)
-	findUsersCommandHandler := findusers.NewCommandHandler(*findUsersService, criteria)
+	findUsersCommandHandler := findusers.NewCommandHandler(*findUsersService)
 
 	// Delete User
 	deleteUserService := deleteuser.NewService(userRepository)

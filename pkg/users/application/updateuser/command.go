@@ -7,13 +7,15 @@ import (
 const COMMAND_TYPE commandbus.Type = "command.updating.user"
 
 type Command struct {
+	id        string
 	firstName string
 	lastName  string
 	email     string
 }
 
-func NewCommand(firstName, lastName, email string) commandbus.Command {
+func NewCommand(id string, firstName string, lastName string, email string) commandbus.Command {
 	return Command{
+		id:        id,
 		firstName: firstName,
 		lastName:  lastName,
 		email:     email,

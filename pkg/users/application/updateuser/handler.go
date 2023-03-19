@@ -27,7 +27,7 @@ func (h *CommandHandler) Handle(ctx *context.Context, cmd commandbus.Command) (c
 		return nil, errors.NewAppError(errors.UNEXPECTED_COMMAND_ERROR)
 	}
 
-	id, err := valueobjects.GenerateNewId()
+	id, err := valueobjects.NewIdFromString(command.id)
 
 	if err != nil {
 		return nil, err

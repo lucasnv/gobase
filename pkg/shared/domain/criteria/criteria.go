@@ -36,8 +36,76 @@ func (cf *CriteriaFilter) GetFilter(filter string) *Filter {
 	return nil
 }
 
-func NewCriteriaFilter(f string) (*CriteriaFilter, *errors.AppError) {
+// The valid operators ar:
+// eq = equal
+// gt = gratter than
+// gte = gratter and equal than
+// lt = less than
+// lte = less and equal than
+// between = between two values
+// in = a value in a list
+// not-in = as in but not in a list
+func invalidOperator(o string) bool {
+	set := make(map[string]bool)
+	list := []string{"eq", "gt", "gte", "lt", "lte", "between", "in", "not", "like"}
 
+	for _, v := range list {
+		set[v] = true
+	}
+
+	return !set[o]
+}
+
+func parametersToArray(parameters string) []string {
+	array := strings.Split(parameters, PARAMETERS_SPLITTER)
+
+	return array
+}
+
+type Criteria interface {
+	Type() string
+}
+
+type SorterCriteria interface {
+	By() string
+	Sort() string
+}
+
+type PaginatorCriteria interface {
+	Limit() uint32
+	Offset() uint32
+	Page() uint32
+	PageSize() uint32
+}
+
+type Builder interface {
+	GetFilters(filers string) (*CriteriaFilter, *errors.AppError)
+	And(c1 Criteria, c2 Criteria) Criteria
+	Between(field string, values []string) Criteria
+	Eq(field string, value string) Criteria
+	Gt(field string, value any) Criteria
+	Gte(field string, value any) Criteria
+	In(field string, values any) Criteria
+	Like(field string, value string) Criteria
+	Lt(field string, value any) Criteria
+	Lte(field string, value any) Criteria
+	Not(field string, c Criteria) Criteria
+	Or(c1 Criteria, c2 Criteria) Criteria
+	Sort(field string, order string) SorterCriteria
+	Paginator(page uint32, perPage uint32) PaginatorCriteria
+}
+
+type CriteriaBuilder struct {
+}
+
+func NewCriterBuilder() CriteriaBuilder {
+	return CriteriaBuilder{}
+}
+
+var _ Builder = (*CriteriaBuilder)(nil)
+
+// Get filters from uri
+func (CriteriaBuilder) GetFilters(f string) (*CriteriaFilter, *errors.AppError) {
 	filters, err := stringToFilters(f)
 
 	if err != nil {
@@ -80,62 +148,267 @@ func stringToFilters(input string) (Filters, *errors.AppError) {
 	return filters, nil
 }
 
-// The valid operators ar:
-// eq = equal
-// gt = gratter than
-// gte = gratter and equal than
-// lt = less than
-// lte = less and equal than
-// between = between two values
-// in = a value in a list
-// not-in = as in but not in a list
-func invalidOperator(o string) bool {
-	set := make(map[string]bool)
-	list := []string{"eq", "gt", "gte", "lt", "lte", "between", "in", "not", "like"}
+// And Criteria
+func (CriteriaBuilder) And(c1 Criteria, c2 Criteria) Criteria {
+	return AndCriteria{
+		C1: c1,
+		C2: c2,
+	}
+}
 
-	for _, v := range list {
-		set[v] = true
+type AndCriteria struct {
+	C1 Criteria
+	C2 Criteria
+}
+
+func (AndCriteria) Type() string {
+	return "and"
+}
+
+// Between criteria
+func (CriteriaBuilder) Between(f string, values []string) Criteria {
+
+	if len(values) != 2 {
+		return BetweenCriteria{
+			Field: f,
+			V1:    "",
+			V2:    "",
+		}
 	}
 
-	return !set[o]
+	return BetweenCriteria{
+		Field: f,
+		V1:    values[0],
+		V2:    values[1],
+	}
 }
 
-func parametersToArray(parameters string) []string {
-	array := strings.Split(parameters, PARAMETERS_SPLITTER)
-
-	return array
+type BetweenCriteria struct {
+	Field string
+	V1    any
+	V2    any
 }
 
-type Criteria interface {
-	Filter() interface{}
+func (BetweenCriteria) Type() string {
+	return "between"
 }
 
-type SortCriteria interface {
-	By() string
-	Sort() string
+// Equal Criteria
+func (CriteriaBuilder) Eq(field string, value string) Criteria {
+	return EqCriteria{
+		Field: field,
+		Value: value,
+	}
 }
 
-type PaginatorCriteria interface {
-	Limit() int
-	Offset() int
-	Page() int
-	PageSize() int
+type EqCriteria struct {
+	Field string
+	Value any
 }
 
-type Builder interface {
-	GetFilters(filers string) (*CriteriaFilter, *errors.AppError)
-	Owner(field string, value string) Criteria
-	And(c1 Criteria, c2 Criteria) Criteria
-	Between(field string, values []string) Criteria
-	Eq(field string, value string) Criteria
-	Gt(field string, value any) Criteria
-	Gte(field string, value any) Criteria
-	In(field string, values []string) Criteria
-	Like(field string, value string) Criteria
-	Lt(field string, value any) Criteria
-	Lte(field string, value any) Criteria
-	Not(field string, c Criteria) Criteria
-	Or(c1 Criteria, c2 Criteria) Criteria
-	Sort(field string, order string) SortCriteria
-	Paginator(page int, perPage int) PaginatorCriteria
+func (EqCriteria) Type() string {
+	return "eq"
 }
+
+// Gt Criteria
+func (CriteriaBuilder) Gt(field string, value any) Criteria {
+	return GtCriteria{
+		Field: field,
+		Value: value,
+	}
+}
+
+type GtCriteria struct {
+	Field string
+	Value any
+}
+
+func (GtCriteria) Type() string {
+	return "gt"
+}
+
+// Gte Criteria
+func (CriteriaBuilder) Gte(field string, value any) Criteria {
+	return GteCriteria{
+		Field: field,
+		Value: value,
+	}
+}
+
+type GteCriteria struct {
+	Field string
+	Value any
+}
+
+func (GteCriteria) Type() string {
+	return "gte"
+}
+
+// In Criteria
+func (CriteriaBuilder) In(field string, value any) Criteria {
+	return InCriteria{
+		Field: field,
+		Value: value,
+	}
+}
+
+type InCriteria struct {
+	Field string
+	Value any
+}
+
+func (InCriteria) Type() string {
+	return "in"
+}
+
+// Like Criteria
+func (CriteriaBuilder) Like(field string, value string) Criteria {
+	return LikeCriteria{
+		Field: field,
+		Value: value,
+	}
+}
+
+type LikeCriteria struct {
+	Field string
+	Value string
+}
+
+func (LikeCriteria) Type() string {
+	return "like"
+}
+
+// Lt Criteria
+func (CriteriaBuilder) Lt(field string, value any) Criteria {
+	return LtCriteria{
+		Field: field,
+		Value: value,
+	}
+}
+
+type LtCriteria struct {
+	Field string
+	Value any
+}
+
+func (LtCriteria) Type() string {
+	return "lt"
+}
+
+// Lte Criteria
+func (CriteriaBuilder) Lte(field string, value any) Criteria {
+	return LteCriteria{
+		Field: field,
+		Value: value,
+	}
+}
+
+type LteCriteria struct {
+	Field string
+	Value any
+}
+
+func (LteCriteria) Type() string {
+	return "lte"
+}
+
+// Not Criteria
+func (CriteriaBuilder) Not(field string, c Criteria) Criteria {
+	return NotCriteria{
+		Field:    field,
+		Criteria: c,
+	}
+}
+
+type NotCriteria struct {
+	Field    string
+	Criteria Criteria
+}
+
+func (NotCriteria) Type() string {
+	return "not"
+}
+
+// Or criteria
+func (CriteriaBuilder) Or(c1 Criteria, c2 Criteria) Criteria {
+	return OrCriteria{
+		C1: c1,
+		C2: c2,
+	}
+}
+
+type OrCriteria struct {
+	C1 Criteria
+	C2 Criteria
+}
+
+func (OrCriteria) Type() string {
+	return "or"
+}
+
+// Sort Criteria
+func (CriteriaBuilder) Sort(field string, order string) SorterCriteria {
+	return SortCriteria{
+		Field: field,
+		Order: order,
+	}
+}
+
+type SortCriteria struct {
+	Field string
+	Order string
+}
+
+func (c SortCriteria) By() string {
+	return c.Field
+}
+
+func (c SortCriteria) Sort() string {
+	return c.Order
+}
+
+var _ SorterCriteria = (*SortCriteria)(nil)
+
+// Paginator Criteria
+func (CriteriaBuilder) Paginator(page uint32, pageSize uint32) PaginatorCriteria {
+
+	if page <= 0 {
+		page = 1
+	}
+
+	if pageSize <= 0 {
+		pageSize = 10
+	}
+
+	return PaginateCriteria{
+		offset:   (page - 1) * pageSize,
+		limit:    pageSize,
+		page:     page,
+		pageSize: pageSize,
+	}
+}
+
+type PaginateCriteria struct {
+	limit    uint32
+	offset   uint32
+	page     uint32
+	pageSize uint32
+}
+
+func (c PaginateCriteria) Limit() uint32 {
+	return c.limit
+}
+
+func (c PaginateCriteria) Offset() uint32 {
+	return c.offset
+}
+
+func (c PaginateCriteria) Page() uint32 {
+	return c.page
+}
+
+func (c PaginateCriteria) PageSize() uint32 {
+	return c.pageSize
+}
+
+var _ PaginatorCriteria = (*PaginateCriteria)(nil)

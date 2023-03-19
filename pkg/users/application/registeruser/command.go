@@ -13,12 +13,11 @@ type Command struct {
 	password  string
 }
 
-func NewCommand(firstName, lastName, email, password string) commandbus.Command {
+func NewCommand(firstName, lastName, email string) commandbus.Command {
 	return Command{
 		firstName: firstName,
 		lastName:  lastName,
 		email:     email,
-		password:  password,
 	}
 }
 

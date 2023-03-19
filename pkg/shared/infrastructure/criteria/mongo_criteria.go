@@ -2,242 +2,156 @@ package criteria
 
 import (
 	"<MODULE_URL_REPLACE>/pkg/shared/domain/criteria"
-	"<MODULE_URL_REPLACE>/pkg/shared/domain/errors"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type MongoBuilder struct {
+type MongoCriteriaBuilderAdapter struct {
 }
 
-func (MongoBuilder) GetFilters(f string) (*criteria.CriteriaFilter, *errors.AppError) {
-	return criteria.NewCriteriaFilter(f)
+func NewMongoCriteriaBuilderAdapter() MongoCriteriaBuilderAdapter {
+	return MongoCriteriaBuilderAdapter{}
 }
 
-func (MongoBuilder) And(c1 criteria.Criteria, c2 criteria.Criteria) criteria.Criteria {
-	return AndMongoCriteria{}
+func (a MongoCriteriaBuilderAdapter) Build(c criteria.Criteria) bson.M {
+	if c == nil {
+		return bson.M{}
+	}
+
+	switch c.Type() {
+	case "and":
+		andCriteria := c.(criteria.AndCriteria)
+		return bson.M{
+			"$and": []bson.M{
+				a.Build(andCriteria.C1),
+				a.Build(andCriteria.C2),
+			},
+		}
+
+	case "between":
+		betweenCriteria := c.(criteria.BetweenCriteria)
+		return a.Between(betweenCriteria.Field, betweenCriteria.V1, betweenCriteria.V2)
+
+	case "eq":
+		eqCriteria := c.(criteria.EqCriteria)
+		return a.Eq(eqCriteria.Field, eqCriteria.Value)
+
+	case "gt":
+		gtCriteria := c.(criteria.GtCriteria)
+		return a.Gt(gtCriteria.Field, gtCriteria.Value)
+
+	case "gte":
+		gteCriteria := c.(criteria.GteCriteria)
+		return a.Gt(gteCriteria.Field, gteCriteria.Value)
+
+	case "in":
+		inCriteria := c.(criteria.InCriteria)
+		return a.In(inCriteria.Field, inCriteria.Value)
+
+	case "like":
+		likeCriteria := c.(criteria.LikeCriteria)
+		return a.Like(likeCriteria.Field, likeCriteria.Value)
+
+	case "lt":
+		ltCriteria := c.(criteria.LtCriteria)
+		return a.Lt(ltCriteria.Field, ltCriteria.Value)
+
+	case "lte":
+		lteCriteria := c.(criteria.LteCriteria)
+		return a.Lte(lteCriteria.Field, lteCriteria.Value)
+
+	case "or":
+		orCriteria := c.(criteria.OrCriteria)
+
+		return bson.M{
+			"$or": []bson.M{
+				a.Build(orCriteria.C1),
+				a.Build(orCriteria.C2),
+			},
+		}
+
+	case "not":
+		notCriteria := c.(criteria.NotCriteria)
+		return bson.M{"$not": a.Build(notCriteria.Criteria)}
+	}
+
+	return bson.M{}
 }
 
-func (MongoBuilder) Owner(field string, value string) criteria.Criteria {
-	return OwnerMongoCriteria{
-		field: field,
-		value: value,
+func (MongoCriteriaBuilderAdapter) Between(field string, v1 any, v2 any) bson.M {
+	return bson.M{
+		field: bson.M{
+			"$gte": v1,
+			"$lte": v2,
+		},
 	}
 }
 
-func (MongoBuilder) Between(field string, values []string) criteria.Criteria {
-	return BetweenMongoCriteria{}
+func (MongoCriteriaBuilderAdapter) Eq(field string, value any) bson.M {
+	return bson.M{field: value}
 }
 
-func (MongoBuilder) Eq(field string, value string) criteria.Criteria {
-	return EqMongoCriteria{
-		field: field,
-		value: value,
+func (MongoCriteriaBuilderAdapter) Gt(field string, value any) bson.M {
+	return bson.M{
+		field: bson.M{
+			"$gt": value,
+		},
 	}
 }
 
-func (MongoBuilder) Gt(field string, value any) criteria.Criteria {
-	return GtMongoCriteria{}
+func (MongoCriteriaBuilderAdapter) Gte(field string, value any) bson.M {
+	return bson.M{
+		field: bson.M{
+			"$gte": value,
+		},
+	}
 }
 
-func (MongoBuilder) Gte(field string, value any) criteria.Criteria {
-	return GteMongoCriteria{}
+func (MongoCriteriaBuilderAdapter) In(field string, values any) bson.M {
+	return bson.M{
+		field: bson.M{
+			"$in": values,
+		},
+	}
 }
 
-func (MongoBuilder) In(field string, values []string) criteria.Criteria {
-	return InMongoCriteria{}
+func (MongoCriteriaBuilderAdapter) Like(field string, value string) bson.M {
+	return bson.M{
+		field: bson.M{
+			"$regex":   "*." + value + ".*",
+			"$options": "i",
+		},
+	}
 }
 
-func (MongoBuilder) Like(field string, value string) criteria.Criteria {
-	return LikeMongoCriteria{}
+func (MongoCriteriaBuilderAdapter) Lt(field string, value any) bson.M {
+	return bson.M{
+		field: bson.M{
+			"$lt": value,
+		},
+	}
 }
 
-func (MongoBuilder) Lt(field string, value any) criteria.Criteria {
-	return LtMongoCriteria{}
+func (MongoCriteriaBuilderAdapter) Lte(field string, value any) bson.M {
+	return bson.M{
+		field: bson.M{
+			"$lte": value,
+		},
+	}
 }
 
-func (MongoBuilder) Lte(field string, value any) criteria.Criteria {
-	return LteMongoCriteria{}
+func (MongoCriteriaBuilderAdapter) Not(field string, value any) bson.M {
+	return bson.M{
+		field: bson.M{"$not": bson.M{"$eq": value}},
+	}
 }
 
-func (MongoBuilder) Not(field string, c criteria.Criteria) criteria.Criteria {
-	return NotMongoCriteria{}
+func (MongoCriteriaBuilderAdapter) Sort(o criteria.SorterCriteria) bson.D {
+	var sorting map[string]int8 = map[string]int8{"asc": 1, "desc": -1}
+
+	if len(o.By()) == 0 || len(o.Sort()) == 0 {
+		return bson.D{}
+	}
+
+	return bson.D{primitive.E{Key: o.By(), Value: sorting[o.Sort()]}}
 }
-
-func (MongoBuilder) Or(c1 criteria.Criteria, c2 criteria.Criteria) criteria.Criteria {
-	return OrMongoCriteria{}
-}
-
-func (MongoBuilder) Sort(field string, order string) criteria.SortCriteria {
-	return SortMongoCriteria{}
-}
-
-func (MongoBuilder) Paginator(page int, perPage int) criteria.PaginatorCriteria {
-	return PaginatorMongoCriteria{}
-}
-
-func NewMongoBuilder() (criteria.Builder, *errors.AppError) {
-	return &MongoBuilder{}, nil
-}
-
-var _ criteria.Builder = (*MongoBuilder)(nil)
-
-type AndMongoCriteria struct {
-}
-
-func (c AndMongoCriteria) Filter() interface{} {
-	return true
-}
-
-var _ criteria.Criteria = (*AndMongoCriteria)(nil)
-
-type OwnerMongoCriteria struct {
-	field string
-	value any
-}
-
-func (c OwnerMongoCriteria) Filter() interface{} {
-	return true
-}
-
-var _ criteria.Criteria = (*OwnerMongoCriteria)(nil)
-
-type EqMongoCriteria struct {
-	field string
-	value any
-}
-
-func (c EqMongoCriteria) Filter() interface{} {
-	return true
-}
-
-var _ criteria.Criteria = (*EqMongoCriteria)(nil)
-
-type GtMongoCriteria struct {
-	field string
-	value any
-}
-
-func (c GtMongoCriteria) Filter() interface{} {
-	return true
-}
-
-var _ criteria.Criteria = (*GtMongoCriteria)(nil)
-
-type GteMongoCriteria struct {
-	field string
-	value any
-}
-
-func (c GteMongoCriteria) Filter() interface{} {
-	return true
-}
-
-var _ criteria.Criteria = (*GteMongoCriteria)(nil)
-
-type InMongoCriteria struct {
-	field string
-	value any
-}
-
-func (c InMongoCriteria) Filter() interface{} {
-	return true
-}
-
-var _ criteria.Criteria = (*InMongoCriteria)(nil)
-
-type LikeMongoCriteria struct {
-	field string
-	value string
-}
-
-func (c LikeMongoCriteria) Filter() interface{} {
-	return true
-}
-
-var _ criteria.Criteria = (*LikeMongoCriteria)(nil)
-
-type LtMongoCriteria struct {
-	field string
-	value any
-}
-
-func (c LtMongoCriteria) Filter() interface{} {
-	return true
-}
-
-var _ criteria.Criteria = (*LtMongoCriteria)(nil)
-
-type LteMongoCriteria struct {
-	field string
-	value any
-}
-
-func (c LteMongoCriteria) Filter() interface{} {
-	return true
-}
-
-var _ criteria.Criteria = (*LteMongoCriteria)(nil)
-
-type NotMongoCriteria struct {
-	field string
-	value criteria.Criteria
-}
-
-func (c NotMongoCriteria) Filter() interface{} {
-	return true
-}
-
-var _ criteria.Criteria = (*NotMongoCriteria)(nil)
-
-type OrMongoCriteria struct {
-}
-
-func (c OrMongoCriteria) Filter() interface{} {
-	return true
-}
-
-var _ criteria.Criteria = (*OrMongoCriteria)(nil)
-
-type SortMongoCriteria struct {
-	Field string
-	Order string
-}
-
-func (c SortMongoCriteria) By() string {
-	return c.Field
-}
-
-func (c SortMongoCriteria) Sort() string {
-	return c.Order
-}
-
-var _ criteria.SortCriteria = (*SortMongoCriteria)(nil)
-
-type PaginatorMongoCriteria struct {
-}
-
-func (c PaginatorMongoCriteria) Limit() int {
-	return 10
-}
-
-func (c PaginatorMongoCriteria) Offset() int {
-	return 1
-}
-
-func (c PaginatorMongoCriteria) Page() int {
-	return 10
-}
-
-func (c PaginatorMongoCriteria) PageSize() int {
-	return 1
-}
-
-var _ criteria.PaginatorCriteria = (*PaginatorMongoCriteria)(nil)
-
-type BetweenMongoCriteria struct {
-}
-
-func (c BetweenMongoCriteria) Filter() interface{} {
-	return true
-}
-
-var _ criteria.Criteria = (*BetweenMongoCriteria)(nil)

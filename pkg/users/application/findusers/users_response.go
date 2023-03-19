@@ -18,14 +18,14 @@ func NewUsersResponse(c collection.Collection) collection.Collection {
 	users := c.Data().(domain.List)
 
 	for _, u := range users {
-		id := u.Id()
-		createdAt := u.CreatedAt()
+		id := u.GetId()
+		createdAt := u.GetCreatedAt()
 
 		response = append(response, userResponse{
 			Id:        id.ToString(),
-			FirstName: u.FirstName().Value,
-			LastName:  u.LastName().Value,
-			Email:     u.Email().Value,
+			FirstName: u.GetFirstName().Value,
+			LastName:  u.GetLastName().Value,
+			Email:     u.GetEmail().Value,
 			CreatedAt: createdAt.ToString(),
 		})
 	}

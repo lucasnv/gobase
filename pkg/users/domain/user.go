@@ -19,46 +19,45 @@ type (
 	Email struct {
 		Value string
 	}
-
-	Password struct {
-		Value string
-	}
 )
 
 type User struct {
-	id        vo.Id
-	firstName FirstName
-	lastName  LastName
-	email     Email
-	password  Password
-	createdAt vo.CustomTime
-	updateAt  vo.CustomTime
+	Id        vo.Id
+	FirstName FirstName
+	LastName  LastName
+	Email     Email
+	CreatedAt vo.DateTime
 }
 
 type List []User
 
-func (u *User) Id() vo.Id {
-	return u.id
+func (u *User) GetId() vo.Id {
+	return u.Id
 }
 
-func (u *User) FirstName() FirstName {
-	return u.firstName
+func (u *User) GetFirstName() FirstName {
+	return u.FirstName
 }
 
-func (u *User) LastName() LastName {
-	return u.lastName
+func (u *User) GetLastName() LastName {
+	return u.LastName
 }
 
-func (u *User) Email() Email {
-	return u.email
+func (u *User) GetEmail() Email {
+	return u.Email
 }
 
-func (u *User) Password() Password {
-	return u.password
+func (u *User) GetCreatedAt() vo.DateTime {
+	return u.CreatedAt
 }
 
-func (u *User) CreatedAt() vo.CustomTime {
-	return u.createdAt
+func (u *User) UpdateProfile(fn FirstName, ln LastName, e Email) User {
+
+	u.FirstName = fn
+	u.LastName = ln
+	u.Email = e
+
+	return *u
 }
 
 func NewFirstName(value string) (FirstName, errors.App) {
@@ -91,24 +90,12 @@ func NewEmail(value string) (Email, errors.App) {
 	return Email{Value: value}, nil
 }
 
-func NewPassword(value string) (Password, errors.App) {
-	validate := validation.New()
-
-	if err := validate.Var("password", value, "required,min=4,max=15"); err != nil {
-		return Password{}, NewUserError(INVALID_USER_ERROR, err)
-	}
-
-	return Password{Value: value}, nil
-}
-
-func NewUser(id vo.Id, firstName FirstName, lastName LastName, email Email, password Password) User {
+func NewUser(id vo.Id, firstName FirstName, lastName LastName, email Email) User {
 	return User{
-		id:        id,
-		firstName: firstName,
-		lastName:  lastName,
-		email:     email,
-		password:  password,
-		createdAt: vo.NewTime(),
-		updateAt:  vo.NewTime(),
+		Id:        id,
+		FirstName: firstName,
+		LastName:  lastName,
+		Email:     email,
+		CreatedAt: vo.NewDateTimeNow(),
 	}
 }

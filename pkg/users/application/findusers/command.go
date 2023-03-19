@@ -10,11 +10,11 @@ type Command struct {
 	filter    string
 	orderBy   string
 	orderSort string
-	page      int
-	perPage   int
+	page      uint32
+	perPage   uint32
 }
 
-func NewCommand(f string, ob string, os string, p int, pp int) commandbus.Command {
+func NewCommand(f string, ob string, os string, p uint32, pp uint32) commandbus.Command {
 	return Command{
 		filter:    f,
 		orderBy:   ob,

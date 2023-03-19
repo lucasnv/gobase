@@ -6,7 +6,7 @@ package request
 // - /users?sort_by=name&sort_order=asc&page=1&per_page=20
 // - /users?filter=name::eq::lucas vazquez&page=1&per_page=20
 // - /users?filter=name::eq::lucas vazquez&sort_by=name&sort_order=asc
-// - /users?filter=date::between::2023-10-10|2023-10-12
+// - /users?filter=date::between::2023-03-19T13:24:21Z|2023-03-19T13:24:21Z
 // - /users?filter=status::in::active|suspended
 // - /users?filter=name::eq::lucas vazquez,age::lte::50&sort_by=name&sort_order=asc&page=1&per_page=20
 // --------------------

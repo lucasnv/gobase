@@ -2,29 +2,46 @@ package infrastructure
 
 import (
 	"context"
-	"fmt"
 	"sort"
-	"strings"
-	"time"
 
 	"<MODULE_URL_REPLACE>/pkg/shared/domain/collection"
 	"<MODULE_URL_REPLACE>/pkg/shared/domain/criteria"
 	"<MODULE_URL_REPLACE>/pkg/shared/domain/errors"
 	vo "<MODULE_URL_REPLACE>/pkg/shared/domain/valueobjects"
-	inmemoryCriteria "<MODULE_URL_REPLACE>/pkg/shared/infrastructure/criteria"
+	criteriaAdapter "<MODULE_URL_REPLACE>/pkg/shared/infrastructure/criteria"
 	user "<MODULE_URL_REPLACE>/pkg/users/domain"
 )
 
 type InmemoryUsersRepository struct {
-	users user.List
+	users           user.List
+	criteriaBuilder criteriaAdapter.InMemoryCriteriaBuilderAdapter
+	fieldsTypes     map[string]string
 }
 
 func NewInmemoryUsersRepository() *InmemoryUsersRepository {
-	return &InmemoryUsersRepository{}
+	return &InmemoryUsersRepository{
+		criteriaBuilder: criteriaAdapter.NewInmemoryCriteriaBuilderAdapter(),
+		fieldsTypes: map[string]string{
+			"first_name": "string",
+			"last_name":  "string",
+			"email":      "string",
+			"created_at": "time",
+		},
+	}
 }
 
-func (r *InmemoryUsersRepository) Save(ctx *context.Context, u user.User) *errors.AppError {
-	r.users = append(r.users, u)
+func (r *InmemoryUsersRepository) Save(ctx *context.Context, newUser user.User) *errors.AppError {
+
+	for i, u := range r.users {
+		id := u.GetId()
+
+		if id.ToString() == newUser.GetId().Value.String() {
+			r.users[i] = newUser
+			return nil
+		}
+	}
+
+	r.users = append(r.users, newUser)
 
 	return nil
 }
@@ -32,7 +49,7 @@ func (r *InmemoryUsersRepository) Save(ctx *context.Context, u user.User) *error
 func (r *InmemoryUsersRepository) Find(ctx *context.Context, searchedId vo.Id) (user.User, *errors.AppError) {
 
 	for _, u := range r.users {
-		id := u.Id()
+		id := u.GetId()
 
 		if id.ToString() == searchedId.ToString() {
 			return u, nil
@@ -42,13 +59,13 @@ func (r *InmemoryUsersRepository) Find(ctx *context.Context, searchedId vo.Id) (
 	return user.User{}, user.NewUserError(user.NOT_FOUND_ERROR)
 }
 
-func (r *InmemoryUsersRepository) FindByCriteria(ctx *context.Context, f criteria.Criteria, o criteria.SortCriteria, p criteria.PaginatorCriteria) (collection.Collection, *errors.AppError) {
+func (r *InmemoryUsersRepository) FindByCriteria(ctx *context.Context, f criteria.Criteria, o criteria.SorterCriteria, p criteria.PaginatorCriteria) (collection.Collection, *errors.AppError) {
 	var result user.List
 
 	if f != nil {
 		for _, u := range r.users {
 
-			ok := filterByCriteria(u, f)
+			ok := r.filterByCriteria(u, f)
 
 			if ok {
 				result = append(result, u)
@@ -58,9 +75,9 @@ func (r *InmemoryUsersRepository) FindByCriteria(ctx *context.Context, f criteri
 		result = r.users
 	}
 
-	totalUsers := len(result)
-	result = sortUsers(result, o)
-	result = paginateUsers(result, p)
+	totalUsers := uint32(len(result) & 0xffffffff)
+	result = r.sortUsers(result, o)
+	result = r.paginateUsers(result, p)
 
 	return collection.NewCollection(result, p.Page(), p.PageSize(), totalUsers), nil
 }
@@ -68,7 +85,7 @@ func (r *InmemoryUsersRepository) FindByCriteria(ctx *context.Context, f criteri
 func (r *InmemoryUsersRepository) Delete(ctx *context.Context, searchedId vo.Id) *errors.AppError {
 
 	for i, u := range r.users {
-		id := u.Id()
+		id := u.GetId()
 
 		if id.ToString() == searchedId.ToString() {
 			r.users = append(r.users[:i], r.users[i+1:]...)
@@ -78,201 +95,104 @@ func (r *InmemoryUsersRepository) Delete(ctx *context.Context, searchedId vo.Id)
 	return nil
 }
 
-func filterByCriteria(u user.User, c criteria.Criteria) bool {
-	filter := c.Filter()
+var _ user.UserRepository = (*InmemoryUsersRepository)(nil)
 
-	switch filter.(string) {
+func (r *InmemoryUsersRepository) filterByCriteria(u user.User, c criteria.Criteria) bool {
 
+	switch c.Type() {
 	case "and":
-		andCriteria := c.(inmemoryCriteria.AndInmemoryCriteria)
-		return filterByCriteria(u, andCriteria.C1) && filterByCriteria(u, andCriteria.C2)
+		andCriteria := c.(criteria.AndCriteria)
+		return r.filterByCriteria(u, andCriteria.C1) && r.filterByCriteria(u, andCriteria.C2)
 
 	case "between":
-		betweenCriteria := c.(inmemoryCriteria.BetweenInmemoryCriteria)
-
-		if betweenCriteria.Field == "created_at" {
-			dateValue := getDateValueByField(u, betweenCriteria.Field).Truncate(time.Minute)
-			dateToCompare1, err := time.Parse(time.RFC3339, betweenCriteria.V1.(string))
-			if err != nil {
-				fmt.Println(err)
-			}
-			dateToCompare1 = dateToCompare1.Truncate(time.Minute)
-			dateToCompare2, _ := time.Parse(time.RFC3339, betweenCriteria.V2.(string))
-			dateToCompare2 = dateToCompare2.Truncate(time.Minute)
-
-			return (dateValue.After(dateToCompare1) || dateValue.Equal(dateToCompare1)) && (dateValue.Before(dateToCompare2) || dateValue.Equal(dateToCompare2))
-		}
-
-		return false
+		betweenCriteria := c.(criteria.BetweenCriteria)
+		entityValue := getValueByField(u, betweenCriteria.Field)
+		return r.criteriaBuilder.Between(betweenCriteria, r.fieldsTypes, entityValue)
 
 	case "eq":
-		eqCriteria := c.(inmemoryCriteria.EqInmemoryCriteria)
-
-		if eqCriteria.Field == "created_at" {
-			dateValue := getDateValueByField(u, eqCriteria.Field).Truncate(time.Minute)
-			dateToCompare, _ := time.Parse(time.RFC3339, eqCriteria.Value.(string))
-			dateToCompare = dateToCompare.Truncate(time.Minute)
-
-			return dateValue.Equal(dateToCompare)
-		}
-
-		value := getStringValueByField(u, eqCriteria.Field)
-		return value == strings.ToLower(eqCriteria.Value.(string))
+		eqCriteria := c.(criteria.EqCriteria)
+		entityValue := getValueByField(u, eqCriteria.Field)
+		return r.criteriaBuilder.Eq(eqCriteria, r.fieldsTypes, entityValue)
 
 	case "gt":
-		gtCriteria := c.(inmemoryCriteria.GtInmemoryCriteria)
-
-		if gtCriteria.Field == "created_at" {
-			dateValue := getDateValueByField(u, gtCriteria.Field).Truncate(time.Minute)
-			dateToCompare, _ := time.Parse(time.RFC3339, gtCriteria.Value.(string))
-			dateToCompare = dateToCompare.Truncate(time.Minute)
-
-			return dateValue.After(dateToCompare)
-		}
-
-		return false
+		gtCriteria := c.(criteria.GtCriteria)
+		entityValue := getValueByField(u, gtCriteria.Field)
+		return r.criteriaBuilder.Gt(gtCriteria, r.fieldsTypes, entityValue)
 
 	case "gte":
-		gteCriteria := c.(inmemoryCriteria.GteInmemoryCriteria)
-
-		if gteCriteria.Field == "created_at" {
-			dateValue := getDateValueByField(u, gteCriteria.Field).Truncate(time.Minute)
-			dateToCompare, _ := time.Parse(time.RFC3339, gteCriteria.Value.(string))
-			dateToCompare = dateToCompare.Truncate(time.Minute)
-
-			return dateValue.After(dateToCompare) || dateValue.Equal(dateToCompare)
-		}
-
-		return false
+		gteCriteria := c.(criteria.GteCriteria)
+		entityValue := getValueByField(u, gteCriteria.Field)
+		return r.criteriaBuilder.Gte(gteCriteria, r.fieldsTypes, entityValue)
 
 	case "in":
-		inCriteria := c.(inmemoryCriteria.InInmemoryCriteria)
-		value := getStringValueByField(u, inCriteria.Field)
-		for _, criteriaValue := range inCriteria.Value.([]any) {
-			if criteriaValue == strings.ToLower(value) {
-				return true
-			}
-		}
-		return false
+		inCriteria := c.(criteria.InCriteria)
+		entityValue := getValueByField(u, inCriteria.Field)
+		return r.criteriaBuilder.In(inCriteria, r.fieldsTypes, entityValue)
 
 	case "like":
-		likeCriteria := c.(inmemoryCriteria.LikeInmemoryCriteria)
-		value := getStringValueByField(u, likeCriteria.Field)
-		if strings.Contains(value, strings.ToLower(likeCriteria.Value)) {
-			return true
-		}
-		return false
+		likeCriteria := c.(criteria.LikeCriteria)
+		entityValue := getValueByField(u, likeCriteria.Field)
+		return r.criteriaBuilder.Like(likeCriteria, r.fieldsTypes, entityValue)
 
 	case "lt":
-		ltCriteria := c.(inmemoryCriteria.LtInmemoryCriteria)
-
-		if ltCriteria.Field == "created_at" {
-			dateValue := getDateValueByField(u, ltCriteria.Field).Truncate(time.Minute)
-			dateToCompare, _ := time.Parse(time.RFC3339, ltCriteria.Value.(string))
-			dateToCompare = dateToCompare.Truncate(time.Minute)
-
-			return dateValue.Before(dateToCompare)
-		}
-
-		return false
+		ltCriteria := c.(criteria.LtCriteria)
+		entityValue := getValueByField(u, ltCriteria.Field)
+		return r.criteriaBuilder.Lt(ltCriteria, r.fieldsTypes, entityValue)
 
 	case "lte":
-		lteCriteria := c.(inmemoryCriteria.LteInmemoryCriteria)
-
-		if lteCriteria.Field == "created_at" {
-			var dateValue time.Time = getDateValueByField(u, lteCriteria.Field)
-			dateValue = dateValue.Truncate(time.Minute)
-			dateToCompare, _ := time.Parse(time.RFC3339, lteCriteria.Value.(string))
-			dateToCompare = dateToCompare.Truncate(time.Minute)
-
-			return dateValue.Before(dateToCompare) || dateValue.Equal(dateToCompare)
-		}
-
-		return false
+		lteCriteria := c.(criteria.LteCriteria)
+		entityValue := getValueByField(u, lteCriteria.Field)
+		return r.criteriaBuilder.Lte(lteCriteria, r.fieldsTypes, entityValue)
 
 	case "or":
-		orCriteria := c.(inmemoryCriteria.OrInmemoryCriteria)
-		return filterByCriteria(u, orCriteria.C1) || filterByCriteria(u, orCriteria.C2)
+		orCriteria := c.(criteria.OrCriteria)
+		return r.filterByCriteria(u, orCriteria.C1) || r.filterByCriteria(u, orCriteria.C2)
 
 	case "not":
-		notCriteria := c.(inmemoryCriteria.NotInmemoryCriteria)
-		return !filterByCriteria(u, notCriteria.Criteria)
+		notCriteria := c.(criteria.NotCriteria)
+		return !r.filterByCriteria(u, notCriteria.Criteria)
 	}
 
-	return true
+	return false
 }
 
-func getStringValueByField(u user.User, field string) string {
-	var value string
-
-	switch field {
-	case "email":
-		value = u.Email().Value
-
-	case "first_name":
-		value = u.FirstName().Value
-
-	case "last_name":
-		value = u.LastName().Value
-	}
-
-	return strings.ToLower(value)
-}
-
-func getDateValueByField(u user.User, field string) time.Time {
-	var value time.Time
-
-	switch field {
-	case "created_at":
-		value = u.CreatedAt().Value
-	}
-
-	return value
-}
-
-func sortUsers(u user.List, o criteria.SortCriteria) user.List {
+func (r *InmemoryUsersRepository) sortUsers(u user.List, o criteria.SorterCriteria) user.List {
 	sort.Slice(u, func(i, j int) bool {
+		v1 := getValueByField(u[i], o.By())
+		v2 := getValueByField(u[j], o.By())
 
-		switch o.By() {
-		case "created_at":
-			v1 := getDateValueByField(u[i], o.By())
-			v2 := getDateValueByField(u[j], o.By())
-
-			if o.Sort() == "asc" {
-				return v1.Before(v2)
-			}
-
-			return v1.After(v2)
-
-		default:
-			v1 := getStringValueByField(u[i], o.By())
-			v2 := getStringValueByField(u[j], o.By())
-
-			if o.Sort() == "asc" {
-				return v1 < v2
-			}
-
-			return v1 > v2
-		}
-
+		return r.criteriaBuilder.Sort(o, r.fieldsTypes, v1, v2)
 	})
 
 	return u
 }
 
-func paginateUsers(u user.List, c criteria.PaginatorCriteria) user.List {
+func (r *InmemoryUsersRepository) paginateUsers(u user.List, c criteria.PaginatorCriteria) user.List {
 	start := c.Offset()
 	end := c.Offset() + c.Limit()
 
-	if start >= len(u) {
+	if start >= uint32(len(u)&0xffffffff) {
 		return user.List{}
 	}
 
-	if end > len(u) {
-		end = len(u)
+	if end > uint32(len(u)&0xffffffff) {
+		end = uint32(len(u) & 0xffffffff)
 	}
 
 	return u[start:end]
 }
 
-var _ user.UserRepository = (*InmemoryUsersRepository)(nil)
+func getValueByField(u user.User, field string) any {
+	switch field {
+	case "created_at":
+		return u.GetCreatedAt().Value
+	case "first_name":
+		return u.GetFirstName().Value
+	case "last_name":
+		return u.GetLastName().Value
+	case "email":
+		return u.GetEmail().Value
+	}
+
+	return nil
+}

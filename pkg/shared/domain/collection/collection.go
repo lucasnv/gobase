@@ -6,10 +6,10 @@ type Collection struct {
 }
 
 type Metadata struct {
-	Page       int
-	PageSize   int
-	TotalPages int
-	Total      int
+	Page       uint32
+	PageSize   uint32
+	TotalPages uint32
+	Total      uint32
 }
 
 func (c Collection) Data() any {
@@ -27,7 +27,7 @@ func (c Collection) SetData(data any) Collection {
 	}
 }
 
-func NewCollection(data any, page int, pageSize int, total int) Collection {
+func NewCollection(data any, page uint32, pageSize uint32, total uint32) Collection {
 
 	totalPages := total / pageSize
 

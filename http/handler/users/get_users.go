@@ -37,7 +37,7 @@ func getGetUsersCommand(req request.FilterRequest) commandbus.Command {
 		req.Filter,
 		req.SortBy,
 		req.SortOrder,
-		req.Page,
-		req.PerPage,
+		uint32(req.Page&0xffffffff),
+		uint32(req.PerPage&0xffffffff),
 	)
 }

@@ -46,11 +46,18 @@ You can execute any command using makefile, the following command described belo
 
 ## TODO
 
-- Implement patch or update
 - Implement mongo
+- El paginador repito siempre lo mismo
+- Tengo que hacer un criteria generico y luego generar un adapter para cada implementacion
+
+- Ver que pasa con los permisos cuando reinstala mongo de nuevo
 - Implement events
 - Move http server to share/infrastructure
 - Take a look on make commands like lint-prepare and lint (make a intallation and it's not necesary)
+
+## Mongo manager
+
+- You have a mongo admin in http://localhost:8081/
 
 ## Configurate .vscode to debug
 

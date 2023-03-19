@@ -27,12 +27,6 @@ func (h *CommandHandler) Handle(ctx *context.Context, cmd commandbus.Command) (c
 		return nil, errors.NewAppError(errors.UNEXPECTED_COMMAND_ERROR)
 	}
 
-	id, err := valueobjects.GenerateNewId()
-
-	if err != nil {
-		return nil, err
-	}
-
 	firstName, err := domain.NewFirstName(command.firstName)
 
 	if err != nil {
@@ -51,19 +45,12 @@ func (h *CommandHandler) Handle(ctx *context.Context, cmd commandbus.Command) (c
 		return nil, err
 	}
 
-	password, err := domain.NewPassword(command.password)
-
-	if err != nil {
-		return nil, err
-	}
-
 	return nil, h.Service.exec(
 		ctx,
-		id,
+		valueobjects.NewId(),
 		firstName,
 		lastName,
 		email,
-		password,
 	)
 }
 

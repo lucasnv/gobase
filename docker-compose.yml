@@ -2,7 +2,7 @@ version: "3.7"
 services:
   # The Go App, 
   # container_name is related with Makefile in order to run commands inside the container
-  <CONTAINER_NAME_REPLACE>:
+  gobasetest:
     container_name: <CONTAINER_NAME_REPLACE>
     build:
       context: .
@@ -10,7 +10,7 @@ services:
     volumes:
       - .:/opt/app/api:rw,delegated
     networks:
-      - <CONTAINER_NAME_REPLACE>_network
+      - gobasetest_network
     ports:
       - 8080:8080
       - 2345:2345
@@ -18,7 +18,36 @@ services:
       - "seccomp:unconfined"
     cap_add:
       - SYS_PTRACE  
+    depends_on:
+      - 'mongo'  
+  # MongoDB
+  mongo:
+    image: 'mongo:6.0.4'
+    container_name: mongo
+    ports:
+      - '27017:27017'
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    volumes:
+      - ./tmp/.mongodata:/data/db    
+    networks:
+      - <CONTAINER_NAME_REPLACE>_network  
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: root
+      ME_CONFIG_MONGODB_URL: mongodb://root:root@mongo:27017/
+    depends_on:
+      - 'mongo'     
+    networks:
+      - <CONTAINER_NAME_REPLACE>_network        
       
 networks:
   <CONTAINER_NAME_REPLACE>_network:
-    name: <CONTAINER_NAME_REPLACE>_network
+    name: <CONTAINER_NAME_REPLACE>_network    

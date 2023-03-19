@@ -12,6 +12,6 @@ import (
 type UserRepository interface {
 	Save(ctx *context.Context, u User) *errors.AppError
 	Find(ctx *context.Context, id vo.Id) (User, *errors.AppError)
-	FindByCriteria(ctx *context.Context, f criteria.Criteria, o criteria.SortCriteria, p criteria.PaginatorCriteria) (collection.Collection, *errors.AppError)
+	FindByCriteria(ctx *context.Context, c criteria.Criteria, o criteria.SorterCriteria, p criteria.PaginatorCriteria) (collection.Collection, *errors.AppError)
 	Delete(ctx *context.Context, id vo.Id) *errors.AppError
 }

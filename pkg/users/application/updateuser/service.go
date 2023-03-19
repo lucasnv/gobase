@@ -19,14 +19,19 @@ func NewService(r user.UserRepository) *Service {
 }
 
 func (s *Service) exec(ctx *context.Context, id valueobjects.Id, fn user.FirstName, ln user.LastName, e user.Email) errors.App {
-
-	/*var newUser user.User = user.NewUser(id, fn, ln, e)
-
-	err := s.UserRepository.Save(ctx, newUser)
+	user, err := s.UserRepository.Find(ctx, id)
 
 	if err != nil {
 		return err
-	}*/
+	}
+
+	userUpdated := user.UpdateProfile(fn, ln, e)
+
+	err = s.UserRepository.Save(ctx, userUpdated)
+
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

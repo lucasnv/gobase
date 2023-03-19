@@ -1,312 +1,231 @@
 package criteria
 
 import (
+	"strings"
+	"time"
+
 	"<MODULE_URL_REPLACE>/pkg/shared/domain/criteria"
-	"<MODULE_URL_REPLACE>/pkg/shared/domain/errors"
 )
 
-type InmemoryBuilder struct {
-	order  string
-	limit  int
-	offset int
+type InMemoryCriteriaBuilderAdapter struct {
 }
 
-func (InmemoryBuilder) GetFilters(f string) (*criteria.CriteriaFilter, *errors.AppError) {
-	return criteria.NewCriteriaFilter(f)
+func NewInmemoryCriteriaBuilderAdapter() InMemoryCriteriaBuilderAdapter {
+	return InMemoryCriteriaBuilderAdapter{}
 }
 
-func (InmemoryBuilder) And(c1 criteria.Criteria, c2 criteria.Criteria) criteria.Criteria {
-	return AndInmemoryCriteria{
-		C1: c1,
-		C2: c2,
+func (a InMemoryCriteriaBuilderAdapter) Between(c criteria.BetweenCriteria, fieldsType map[string]string, entityValue any) bool {
+
+	fieldType := fieldsType[c.Field]
+
+	if entityValue == nil {
+		return false
 	}
-}
 
-func (InmemoryBuilder) Owner(field string, value string) criteria.Criteria {
-	return OwnerInmemoryCriteria{
-		Field: field,
-		Value: value,
+	switch fieldType {
+	case "time":
+		entityValue := entityValue.(time.Time).Truncate(time.Minute)
+		criteriaValue1, _ := time.Parse(time.RFC3339, c.V1.(string))
+		criteriaValue1 = criteriaValue1.Truncate(time.Minute)
+		criteriaValue2, _ := time.Parse(time.RFC3339, c.V1.(string))
+		criteriaValue2 = criteriaValue2.Truncate(time.Minute)
+
+		return (entityValue.After(criteriaValue1) || entityValue.Equal(criteriaValue1)) && (entityValue.Before(criteriaValue2) || entityValue.Equal(criteriaValue2))
 	}
+
+	return false
 }
 
-func (InmemoryBuilder) Between(f string, values []string) criteria.Criteria {
+func (a InMemoryCriteriaBuilderAdapter) Eq(c criteria.EqCriteria, fieldsType map[string]string, entityValue any) bool {
+	fieldType := fieldsType[c.Field]
 
-	if len(values) != 2 {
-		return BetweenInmemoryCriteria{
-			Field: f,
-			V1:    "",
-			V2:    "",
+	if entityValue == nil {
+		return false
+	}
+
+	switch fieldType {
+	case "int":
+		return entityValue == c.Value
+
+	case "string":
+		return strings.ToLower(entityValue.(string)) == strings.ToLower(c.Value.(string))
+
+	case "time":
+		entityValue := entityValue.(time.Time).Truncate(time.Minute)
+		criteriaValue, _ := time.Parse(time.RFC3339, c.Value.(string))
+		criteriaValue = criteriaValue.Truncate(time.Minute)
+		return entityValue.Equal(criteriaValue)
+	}
+
+	return false
+}
+
+func (a InMemoryCriteriaBuilderAdapter) Gt(c criteria.GtCriteria, fieldsType map[string]string, entityValue any) bool {
+
+	fieldType := fieldsType[c.Field]
+
+	if entityValue == nil {
+		return false
+	}
+
+	switch fieldType {
+	case "int":
+		return entityValue.(int64) < c.Value.(int64)
+
+	case "string":
+		return entityValue.(string) < c.Value.(string)
+
+	case "time":
+		entityValue := entityValue.(time.Time).Truncate(time.Minute)
+		criteriaValue, _ := time.Parse(time.RFC3339, c.Value.(string))
+		criteriaValue = criteriaValue.Truncate(time.Minute)
+		return entityValue.After(criteriaValue)
+	}
+
+	return false
+}
+
+func (a InMemoryCriteriaBuilderAdapter) Gte(c criteria.GteCriteria, fieldsType map[string]string, entityValue any) bool {
+
+	fieldType := fieldsType[c.Field]
+
+	if entityValue == nil {
+		return false
+	}
+
+	switch fieldType {
+	case "int":
+		return entityValue.(int64) <= c.Value.(int64)
+
+	case "string":
+		return strings.ToLower(entityValue.(string)) <= strings.ToLower(c.Value.(string))
+
+	case "time":
+		entityValue := entityValue.(time.Time).Truncate(time.Minute)
+		criteriaValue, _ := time.Parse(time.RFC3339, c.Value.(string))
+		criteriaValue = criteriaValue.Truncate(time.Minute)
+		return entityValue.After(criteriaValue) || entityValue.Equal(criteriaValue)
+	}
+
+	return false
+}
+
+func (a InMemoryCriteriaBuilderAdapter) In(c criteria.InCriteria, fieldsType map[string]string, entityValue any) bool {
+	fieldType := fieldsType[c.Field]
+
+	for _, criteriaValue := range c.Value.([]any) {
+		switch fieldType {
+		case "int":
+			if entityValue.(int64) == criteriaValue.(int64) {
+				return true
+			}
+
+		case "string":
+			if strings.ToLower(entityValue.(string)) == strings.ToLower(criteriaValue.(string)) {
+				return true
+			}
 		}
 	}
 
-	return BetweenInmemoryCriteria{
-		Field: f,
-		V1:    values[0],
-		V2:    values[1],
-	}
+	return false
 }
 
-func (InmemoryBuilder) Eq(field string, value string) criteria.Criteria {
-	return EqInmemoryCriteria{
-		Field: field,
-		Value: value,
-	}
-}
+func (a InMemoryCriteriaBuilderAdapter) Like(c criteria.LikeCriteria, fieldsType map[string]string, entityValue any) bool {
+	fieldType := fieldsType[c.Field]
 
-func (InmemoryBuilder) Gt(field string, value any) criteria.Criteria {
-	return GtInmemoryCriteria{
-		Field: field,
-		Value: value,
-	}
-}
-
-func (InmemoryBuilder) Gte(field string, value any) criteria.Criteria {
-	return GteInmemoryCriteria{
-		Field: field,
-		Value: value,
-	}
-}
-
-func (InmemoryBuilder) In(field string, values []string) criteria.Criteria {
-	return InInmemoryCriteria{}
-}
-
-func (InmemoryBuilder) Like(field string, value string) criteria.Criteria {
-	return LikeInmemoryCriteria{
-		Field: field,
-		Value: value,
-	}
-}
-
-func (InmemoryBuilder) Lt(field string, value any) criteria.Criteria {
-	return LtInmemoryCriteria{
-		Field: field,
-		Value: value,
-	}
-}
-
-func (InmemoryBuilder) Lte(field string, value any) criteria.Criteria {
-	return LteInmemoryCriteria{
-		Field: field,
-		Value: value,
-	}
-}
-
-func (InmemoryBuilder) Not(field string, c criteria.Criteria) criteria.Criteria {
-	return NotInmemoryCriteria{
-		Field:    field,
-		Criteria: c,
-	}
-}
-
-func (InmemoryBuilder) Or(c1 criteria.Criteria, c2 criteria.Criteria) criteria.Criteria {
-	return OrInmemoryCriteria{
-		C1: c1,
-		C2: c2,
-	}
-}
-
-func (InmemoryBuilder) Sort(field string, order string) criteria.SortCriteria {
-	return SortInmemoryCriteria{
-		Field: field,
-		Order: order,
-	}
-}
-
-func (InmemoryBuilder) Paginator(page int, pageSize int) criteria.PaginatorCriteria {
-
-	if page <= 0 {
-		page = 1
+	if entityValue == nil {
+		return false
 	}
 
-	if pageSize <= 0 {
-		pageSize = 10
+	switch fieldType {
+	case "string":
+		if strings.Contains(strings.ToLower(entityValue.(string)), strings.ToLower(c.Value)) {
+			return true
+		}
 	}
 
-	return PaginatorInmemoryCriteria{
-		OffsetValue:   (page - 1) * pageSize,
-		LimitValue:    pageSize,
-		PageValue:     page,
-		PageSizeValue: pageSize,
+	return false
+}
+
+func (a InMemoryCriteriaBuilderAdapter) Lt(c criteria.LtCriteria, fieldsType map[string]string, entityValue any) bool {
+
+	fieldType := fieldsType[c.Field]
+
+	if entityValue == nil {
+		return false
 	}
+
+	switch fieldType {
+	case "int":
+		return entityValue.(int64) > c.Value.(int64)
+
+	case "string":
+		return strings.ToLower(entityValue.(string)) > strings.ToLower(c.Value.(string))
+
+	case "time":
+		entityValue := entityValue.(time.Time).Truncate(time.Minute)
+		criteriaValue, _ := time.Parse(time.RFC3339, c.Value.(string))
+		criteriaValue = criteriaValue.Truncate(time.Minute)
+		return entityValue.Before(criteriaValue)
+	}
+
+	return false
 }
 
-func NewInmemoryBuilder() (criteria.Builder, *errors.AppError) {
-	return &InmemoryBuilder{}, nil
+func (a InMemoryCriteriaBuilderAdapter) Lte(c criteria.LteCriteria, fieldsType map[string]string, entityValue any) bool {
+
+	fieldType := fieldsType[c.Field]
+
+	if entityValue == nil {
+		return false
+	}
+
+	switch fieldType {
+	case "int":
+		return entityValue.(int64) >= c.Value.(int64)
+
+	case "string":
+		return entityValue.(string) >= c.Value.(string)
+
+	case "time":
+		entityValue := entityValue.(time.Time).Truncate(time.Minute)
+		criteriaValue, _ := time.Parse(time.RFC3339, c.Value.(string))
+		criteriaValue = criteriaValue.Truncate(time.Minute)
+		return entityValue.Before(criteriaValue) || entityValue.Equal(criteriaValue)
+	}
+
+	return false
 }
 
-var _ criteria.Builder = (*InmemoryBuilder)(nil)
+func (a InMemoryCriteriaBuilderAdapter) Sort(c criteria.SorterCriteria, fieldsType map[string]string, v1 any, v2 any) bool {
 
-type AndInmemoryCriteria struct {
-	C1 criteria.Criteria
-	C2 criteria.Criteria
+	fieldType := fieldsType[c.By()]
+
+	switch fieldType {
+	case "int":
+		if c.Sort() == "asc" {
+			return v1.(int64) < v2.(int64)
+		}
+		return v1.(int64) > v2.(int64)
+
+	case "string":
+		if c.Sort() == "asc" {
+			return v1.(string) < v2.(string)
+		}
+		return v1.(string) > v2.(string)
+
+	case "time":
+		v1, _ := time.Parse(time.RFC3339, v1.(string))
+		v1 = v1.Truncate(time.Minute)
+		v2, _ := time.Parse(time.RFC3339, v2.(string))
+		v2 = v2.Truncate(time.Minute)
+
+		if c.Sort() == "asc" {
+			return v1.Before(v2)
+		}
+
+		return v1.After(v2)
+	}
+
+	return false
 }
-
-func (c AndInmemoryCriteria) Filter() interface{} {
-	return "and"
-}
-
-var _ criteria.Criteria = (*AndInmemoryCriteria)(nil)
-
-type OwnerInmemoryCriteria struct {
-	Field string
-	Value any
-}
-
-func (c OwnerInmemoryCriteria) Filter() interface{} {
-	return "owner"
-}
-
-var _ criteria.Criteria = (*OwnerInmemoryCriteria)(nil)
-
-type EqInmemoryCriteria struct {
-	Field string
-	Value any
-}
-
-func (c EqInmemoryCriteria) Filter() interface{} {
-	return "eq"
-}
-
-var _ criteria.Criteria = (*EqInmemoryCriteria)(nil)
-
-type GtInmemoryCriteria struct {
-	Field string
-	Value any
-}
-
-func (c GtInmemoryCriteria) Filter() interface{} {
-	return "gt"
-}
-
-var _ criteria.Criteria = (*GtInmemoryCriteria)(nil)
-
-// In memory criterials definition
-type GteInmemoryCriteria struct {
-	Field string
-	Value any
-}
-
-func (c GteInmemoryCriteria) Filter() interface{} {
-	return "gte"
-}
-
-var _ criteria.Criteria = (*GteInmemoryCriteria)(nil)
-
-type InInmemoryCriteria struct {
-	Field string
-	Value any
-}
-
-func (c InInmemoryCriteria) Filter() interface{} {
-	return "in"
-}
-
-var _ criteria.Criteria = (*InInmemoryCriteria)(nil)
-
-type LikeInmemoryCriteria struct {
-	Field string
-	Value string
-}
-
-func (c LikeInmemoryCriteria) Filter() interface{} {
-	return "like"
-}
-
-var _ criteria.Criteria = (*LikeInmemoryCriteria)(nil)
-
-type LtInmemoryCriteria struct {
-	Field string
-	Value any
-}
-
-func (c LtInmemoryCriteria) Filter() interface{} {
-	return "lt"
-}
-
-var _ criteria.Criteria = (*LtInmemoryCriteria)(nil)
-
-type LteInmemoryCriteria struct {
-	Field string
-	Value any
-}
-
-func (c LteInmemoryCriteria) Filter() interface{} {
-	return "lte"
-}
-
-var _ criteria.Criteria = (*LteInmemoryCriteria)(nil)
-
-type NotInmemoryCriteria struct {
-	Field    string
-	Criteria criteria.Criteria
-}
-
-func (c NotInmemoryCriteria) Filter() interface{} {
-	return "not"
-}
-
-var _ criteria.Criteria = (*NotInmemoryCriteria)(nil)
-
-type OrInmemoryCriteria struct {
-	C1 criteria.Criteria
-	C2 criteria.Criteria
-}
-
-func (c OrInmemoryCriteria) Filter() interface{} {
-	return "or"
-}
-
-var _ criteria.Criteria = (*OrInmemoryCriteria)(nil)
-
-type PaginatorInmemoryCriteria struct {
-	LimitValue    int
-	OffsetValue   int
-	PageValue     int
-	PageSizeValue int
-}
-
-func (c PaginatorInmemoryCriteria) Limit() int {
-	return c.LimitValue
-}
-
-func (c PaginatorInmemoryCriteria) Offset() int {
-	return c.OffsetValue
-}
-
-func (c PaginatorInmemoryCriteria) Page() int {
-	return c.PageValue
-}
-
-func (c PaginatorInmemoryCriteria) PageSize() int {
-	return c.PageSizeValue
-}
-
-var _ criteria.PaginatorCriteria = (*PaginatorInmemoryCriteria)(nil)
-
-type BetweenInmemoryCriteria struct {
-	Field string
-	V1    any
-	V2    any
-}
-
-func (c BetweenInmemoryCriteria) Filter() interface{} {
-	return "between"
-}
-
-var _ criteria.Criteria = (*BetweenInmemoryCriteria)(nil)
-
-type SortInmemoryCriteria struct {
-	Field string
-	Order string
-}
-
-func (c SortInmemoryCriteria) By() string {
-	return c.Field
-}
-
-func (c SortInmemoryCriteria) Sort() string {
-	return c.Order
-}
-
-var _ criteria.SortCriteria = (*SortInmemoryCriteria)(nil)

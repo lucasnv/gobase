@@ -4,14 +4,18 @@ import (
 	"time"
 )
 
-type CustomTime struct {
+type DateTime struct {
 	Value time.Time
 }
 
-func NewTime() CustomTime {
-	return CustomTime{Value: time.Now().UTC()}
+func NewDateTime(value time.Time) DateTime {
+	return DateTime{Value: value}
 }
 
-func (t *CustomTime) ToString() string {
+func NewDateTimeNow() DateTime {
+	return DateTime{Value: time.Now().UTC()}
+}
+
+func (t *DateTime) ToString() string {
 	return t.Value.Format(time.RFC3339)
 }

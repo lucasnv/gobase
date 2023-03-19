@@ -1,29 +1,30 @@
 package valueobjects
 
 import (
-	"github.com/google/uuid"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"<MODULE_URL_REPLACE>/pkg/shared/domain/errors"
 )
 
 type Id struct {
-	Value uuid.UUID
+	Value primitive.ObjectID
 }
 
-func NewId(value string) (Id, errors.App) {
-	u, err := uuid.Parse(value)
+func NewId() Id {
+	return Id{Value: primitive.NewObjectID()}
+}
+
+func NewIdFromString(value string) (Id, errors.App) {
+
+	newId, err := primitive.ObjectIDFromHex(value)
 
 	if err != nil {
-		return Id{Value: uuid.New()}, errors.NewAppError(errors.INVALID_UUID_ERROR)
+		return Id{Value: newId}, errors.NewAppError(errors.INVALID_UUID_ERROR)
 	}
 
-	return Id{Value: u}, nil
-}
-
-func GenerateNewId() (Id, errors.App) {
-	return Id{Value: uuid.New()}, nil
+	return Id{Value: newId}, nil
 }
 
 func (i *Id) ToString() string {
-	return i.Value.String()
+	return i.Value.Hex()
 }

@@ -6,6 +6,7 @@ import (
 	"<MODULE_URL_REPLACE>/http"
 	"<MODULE_URL_REPLACE>/pkg/shared/infrastructure/commandbus"
 	"<MODULE_URL_REPLACE>/pkg/shared/infrastructure/config"
+	"<MODULE_URL_REPLACE>/pkg/shared/infrastructure/storage"
 	"<MODULE_URL_REPLACE>/pkg/shared/infrastructure/wire"
 	"<MODULE_URL_REPLACE>/pkg/users/application/deleteuser"
 	"<MODULE_URL_REPLACE>/pkg/users/application/finduser"
@@ -18,6 +19,9 @@ func main() {
 
 	// CONFIG
 	config.InitializeDotEnv()
+
+	// MONGO INITIALIZATION
+	storage.InitializeMongoConnection()
 
 	// DEPENDENCY INJECTION
 	app := wire.Setup()
