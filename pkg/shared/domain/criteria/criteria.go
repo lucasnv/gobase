@@ -26,42 +26,6 @@ type CriteriaFilter struct {
 	Filters Filters
 }
 
-func (cf *CriteriaFilter) GetFilter(filter string) *Filter {
-	for _, f := range cf.Filters {
-		if f.Field == filter {
-			return &f
-		}
-	}
-
-	return nil
-}
-
-// The valid operators ar:
-// eq = equal
-// gt = gratter than
-// gte = gratter and equal than
-// lt = less than
-// lte = less and equal than
-// between = between two values
-// in = a value in a list
-// not-in = as in but not in a list
-func invalidOperator(o string) bool {
-	set := make(map[string]bool)
-	list := []string{"eq", "gt", "gte", "lt", "lte", "between", "in", "not", "like"}
-
-	for _, v := range list {
-		set[v] = true
-	}
-
-	return !set[o]
-}
-
-func parametersToArray(parameters string) []string {
-	array := strings.Split(parameters, PARAMETERS_SPLITTER)
-
-	return array
-}
-
 type Criteria interface {
 	Type() string
 }
@@ -79,7 +43,7 @@ type PaginatorCriteria interface {
 }
 
 type Builder interface {
-	GetFilters(filers string) (*CriteriaFilter, *errors.AppError)
+	FiltersToCriteria(filters string) (*Criteria, *errors.AppError)
 	And(c1 Criteria, c2 Criteria) Criteria
 	Between(field string, values []string) Criteria
 	Eq(field string, value string) Criteria
@@ -105,7 +69,83 @@ func NewCriterBuilder() CriteriaBuilder {
 var _ Builder = (*CriteriaBuilder)(nil)
 
 // Get filters from uri
-func (CriteriaBuilder) GetFilters(f string) (*CriteriaFilter, *errors.AppError) {
+func (builder CriteriaBuilder) FiltersToCriteria(f string) (*Criteria, *errors.AppError) {
+	var finalCriteria Criteria
+	var qtyCriteria int
+
+	filters, err := getFilters(f)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for _, filter := range filters.Filters {
+		criteria, err := builder.getCriteriaByFilter(filter)
+
+		if err != nil {
+			return nil, err
+		}
+
+		if qtyCriteria == 0 {
+			finalCriteria = criteria
+			qtyCriteria++
+			continue
+		}
+
+		finalCriteria = builder.And(finalCriteria, criteria)
+		qtyCriteria++
+	}
+
+	return &finalCriteria, nil
+}
+
+func (builder CriteriaBuilder) getCriteriaByFilter(filter Filter) (Criteria, *errors.AppError) {
+	var criteria Criteria
+
+	switch filter.Operator {
+	case "eq":
+		criteria = builder.Eq(filter.Field, filter.Parameters[0])
+
+	case "lt":
+		criteria = builder.Lt(filter.Field, filter.Parameters[0])
+
+	case "lte":
+		criteria = builder.Lte(filter.Field, filter.Parameters[0])
+
+	case "gt":
+		criteria = builder.Gt(filter.Field, filter.Parameters[0])
+
+	case "gte":
+		criteria = builder.Gte(filter.Field, filter.Parameters[0])
+
+	case "in":
+		criteria = builder.In(filter.Field, filter.Parameters)
+
+	case "like":
+		criteria = builder.Like(filter.Field, filter.Parameters[0])
+
+	case "between":
+		criteria = builder.Between(filter.Field, filter.Parameters)
+
+	default:
+		return criteria, errors.NewAppError(errors.INVALID_OPERATOR_FILTER_ERROR)
+	}
+
+	return criteria, nil
+}
+
+// Examples of valid filter string:
+// - page=1&per_page=20
+// - sort_by=name&sort_order=asc&page=1&per_page=20
+// - filter=name::eq::lucas vazquez&page=1&per_page=20
+// - filter=name::eq::lucas vazquez&sort_by=name&sort_order=asc
+// - filter=date::between::2023-03-19T13:24:21Z|2023-03-19T13:24:21Z
+// - filter=status::in::active|suspended
+// - filter=name::eq::lucas vazquez,age::lte::50&sort_by=name&sort_order=asc&page=1&per_page=20
+// --------------------
+// The parameter filter has the folling struct
+// [criteria]::[operator]::[parameters],[criteria]::[operator]::[parameters]
+func getFilters(f string) (*CriteriaFilter, *errors.AppError) {
 	filters, err := stringToFilters(f)
 
 	if err != nil {
@@ -146,6 +186,32 @@ func stringToFilters(input string) (Filters, *errors.AppError) {
 	}
 
 	return filters, nil
+}
+
+// The valid operators ar:
+// eq = equal
+// gt = gratter than
+// gte = gratter and equal than
+// lt = less than
+// lte = less and equal than
+// between = between two values
+// in = a value in a list
+// not-in = as in but not in a list
+func invalidOperator(o string) bool {
+	set := make(map[string]bool)
+	list := []string{"eq", "gt", "gte", "lt", "lte", "between", "in", "not", "like"}
+
+	for _, v := range list {
+		set[v] = true
+	}
+
+	return !set[o]
+}
+
+func parametersToArray(parameters string) []string {
+	array := strings.Split(parameters, PARAMETERS_SPLITTER)
+
+	return array
 }
 
 // And Criteria

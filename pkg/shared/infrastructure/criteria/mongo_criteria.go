@@ -118,7 +118,7 @@ func (MongoCriteriaBuilderAdapter) In(field string, values any) bson.M {
 func (MongoCriteriaBuilderAdapter) Like(field string, value string) bson.M {
 	return bson.M{
 		field: bson.M{
-			"$regex":   "*." + value + ".*",
+			"$regex":   ".*" + value + ".*",
 			"$options": "i",
 		},
 	}

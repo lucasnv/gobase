@@ -46,10 +46,7 @@ You can execute any command using makefile, the following command described belo
 
 ## TODO
 
-- Implement mongo
-- El paginador repito siempre lo mismo
-- Tengo que hacer un criteria generico y luego generar un adapter para cada implementacion
-
+- poner una capa de sanitizacion de datos
 - Ver que pasa con los permisos cuando reinstala mongo de nuevo
 - Implement events
 - Move http server to share/infrastructure

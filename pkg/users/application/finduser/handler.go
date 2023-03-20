@@ -26,13 +26,13 @@ func (h *CommandHandler) Handle(ctx *context.Context, cmd commandbus.Command) (c
 		return nil, errors.NewAppError(errors.UNEXPECTED_COMMAND_ERROR)
 	}
 
-	uuid, err := valueobjects.NewIdFromString(command.id)
+	id, err := valueobjects.NewIdFromString(command.id)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return h.Service.exec(ctx, uuid)
+	return h.Service.exec(ctx, id)
 }
 
 var _ commandbus.Handler = (*CommandHandler)(nil)
