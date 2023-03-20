@@ -1,6 +1,8 @@
 package criteria
 
 import (
+	"fmt"
+	"reflect"
 	"strings"
 
 	"<MODULE_URL_REPLACE>/pkg/shared/domain/errors"
@@ -49,7 +51,7 @@ type Builder interface {
 	Eq(field string, value string) Criteria
 	Gt(field string, value any) Criteria
 	Gte(field string, value any) Criteria
-	In(field string, values any) Criteria
+	In(field string, values []string) Criteria
 	Like(field string, value string) Criteria
 	Lt(field string, value any) Criteria
 	Lte(field string, value any) Criteria
@@ -101,6 +103,8 @@ func (builder CriteriaBuilder) FiltersToCriteria(f string) (*Criteria, *errors.A
 
 func (builder CriteriaBuilder) getCriteriaByFilter(filter Filter) (Criteria, *errors.AppError) {
 	var criteria Criteria
+	fmt.Println(filter.Parameters)
+	fmt.Println(reflect.TypeOf(filter.Parameters).Elem())
 
 	switch filter.Operator {
 	case "eq":
@@ -311,7 +315,7 @@ func (GteCriteria) Type() string {
 }
 
 // In Criteria
-func (CriteriaBuilder) In(field string, value any) Criteria {
+func (CriteriaBuilder) In(field string, value []string) Criteria {
 	return InCriteria{
 		Field: field,
 		Value: value,
@@ -320,7 +324,7 @@ func (CriteriaBuilder) In(field string, value any) Criteria {
 
 type InCriteria struct {
 	Field string
-	Value any
+	Value []string
 }
 
 func (InCriteria) Type() string {

@@ -1,6 +1,7 @@
 package criteria
 
 import (
+	"strconv"
 	"strings"
 	"time"
 
@@ -113,15 +114,16 @@ func (a InMemoryCriteriaBuilderAdapter) Gte(c criteria.GteCriteria, fieldsType m
 func (a InMemoryCriteriaBuilderAdapter) In(c criteria.InCriteria, fieldsType map[string]string, entityValue any) bool {
 	fieldType := fieldsType[c.Field]
 
-	for _, criteriaValue := range c.Value.([]any) {
+	for _, criteriaValue := range c.Value {
 		switch fieldType {
 		case "int":
-			if entityValue.(int64) == criteriaValue.(int64) {
+			i, _ := strconv.ParseInt(criteriaValue, 10, 64)
+			if entityValue.(int64) == i {
 				return true
 			}
 
 		case "string":
-			if strings.ToLower(entityValue.(string)) == strings.ToLower(criteriaValue.(string)) {
+			if strings.ToLower(entityValue.(string)) == strings.ToLower(criteriaValue) {
 				return true
 			}
 		}
