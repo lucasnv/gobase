@@ -46,6 +46,7 @@ You can execute any command using makefile, the following command described belo
 
 ## TODO
 
+- Ignorar tmp folder
 - poner una capa de sanitizacion de datos
 - Ver que pasa con los permisos cuando reinstala mongo de nuevo
 - Implement events

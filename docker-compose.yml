@@ -2,7 +2,7 @@ version: "3.7"
 services:
   # The Go App, 
   # container_name is related with Makefile in order to run commands inside the container
-  gobasetest:
+  <CONTAINER_NAME_REPLACE>:
     container_name: <CONTAINER_NAME_REPLACE>
     build:
       context: .
@@ -10,7 +10,7 @@ services:
     volumes:
       - .:/opt/app/api:rw,delegated
     networks:
-      - gobasetest_network
+      - <CONTAINER_NAME_REPLACE>_network
     ports:
       - 8080:8080
       - 2345:2345
