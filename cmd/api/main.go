@@ -5,6 +5,7 @@ import (
 
 	"<MODULE_URL_REPLACE>/http"
 	"<MODULE_URL_REPLACE>/pkg/shared/infrastructure/commandbus"
+	"<MODULE_URL_REPLACE>/pkg/shared/infrastructure/commandbus/middleware"
 	"<MODULE_URL_REPLACE>/pkg/shared/infrastructure/config"
 	"<MODULE_URL_REPLACE>/pkg/shared/infrastructure/storage"
 	"<MODULE_URL_REPLACE>/pkg/shared/infrastructure/wire"
@@ -35,12 +36,14 @@ func main() {
 	http.InitializeServer(os.Getenv("SERVER_ADDRESS"), commandBus)
 }
 
-// Registar all commands
-// TODO: This must be generic, this gonna be use it in many mains
-func registerCommands(cb *commandbus.InMemoryCommandBus, app *wire.Wire) {
-	cb.Register(registeruser.COMMAND_TYPE, &app.RegisterUserCommandHandler)
-	cb.Register(finduser.COMMAND_TYPE, &app.FindUserCommandHandler)
-	cb.Register(findusers.COMMAND_TYPE, &app.FindUsersCommandHandler)
-	cb.Register(deleteuser.COMMAND_TYPE, &app.DeleteUserCommandHandler)
-	cb.Register(updateuser.COMMAND_TYPE, &app.UpdateUserCommandHandler)
+// Configure commands and middleware
+func registerCommands(bus *commandbus.InMemoryCommandBus, app *wire.Wire) {
+	bus.RegisterCommand(registeruser.COMMAND_TYPE, &app.RegisterUserCommandHandler)
+	bus.RegisterCommand(finduser.COMMAND_TYPE, &app.FindUserCommandHandler)
+	bus.RegisterCommand(findusers.COMMAND_TYPE, &app.FindUsersCommandHandler)
+	bus.RegisterCommand(deleteuser.COMMAND_TYPE, &app.DeleteUserCommandHandler)
+	bus.RegisterCommand(updateuser.COMMAND_TYPE, &app.UpdateUserCommandHandler)
+
+	bus.RegisterMiddleware(middleware.Transaction)
+	bus.RegisterMiddleware(middleware.Event)
 }

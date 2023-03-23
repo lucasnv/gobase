@@ -14,6 +14,10 @@ This is GoLang base structure. It works as a good starting point to create a GoL
 
 > Env tool pre-installed
 
+> Criteria pattern implemented
+
+> Repository pattern implemented (InMemory and Mongodb)
+
 > Docker
 
 > Some dev tools.
@@ -46,11 +50,8 @@ You can execute any command using makefile, the following command described belo
 
 ## TODO
 
-- Ignorar tmp folder
-- poner una capa de sanitizacion de datos
-- Ver que pasa con los permisos cuando reinstala mongo de nuevo
-- Implement events
-- Move http server to share/infrastructure
+- Set a sanitization layer
+- Implement event pattern
 - Take a look on make commands like lint-prepare and lint (make a intallation and it's not necesary)
 
 ## Mongo manager
