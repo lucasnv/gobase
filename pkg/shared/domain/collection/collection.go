@@ -63,7 +63,15 @@ func (c Collection) Transform(fn func(any) any) Collection {
 }
 
 func (c Collection) First() any {
-	return c.items[0]
+	if len(c.items) > 0 {
+		return c.items[0]
+	}
+
+	return nil
+}
+
+func (c Collection) Len() int {
+	return len(c.items)
 }
 
 func New() Collection {
