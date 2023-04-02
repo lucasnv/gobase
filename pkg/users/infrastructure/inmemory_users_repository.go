@@ -79,7 +79,14 @@ func (r *InmemoryUsersRepository) FindByCriteria(ctx *context.Context, f criteri
 	result = r.sortUsers(result, o)
 	result = r.paginateUsers(result, p)
 
-	return collection.NewCollection(result, p.Page(), p.PageSize(), totalUsers), nil
+	c := collection.New()
+	c.SetMetadata(p.Page(), p.PageSize(), totalUsers)
+
+	for _, u := range result {
+		c.Add(u)
+	}
+
+	return c, nil
 }
 
 func (r *InmemoryUsersRepository) Delete(ctx *context.Context, searchedId vo.Id) *errors.AppError {

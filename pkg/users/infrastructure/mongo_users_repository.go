@@ -91,8 +91,7 @@ func (r *MongoUsersRepository) Find(ctx *context.Context, id vo.Id) (user.User, 
 
 func (r *MongoUsersRepository) FindByCriteria(ctx *context.Context, c criteria.Criteria, o criteria.SorterCriteria, p criteria.PaginatorCriteria) (collection.Collection, *errors.AppError) {
 	var results []MongoUser
-	var users user.List
- 
+
 	filter := r.criteriaBuilder.Build(c)
 
 	options := options.Find().SetSkip(int64(p.Offset())).SetLimit(int64(p.Limit())).SetSort(r.criteriaBuilder.Sort(o))
@@ -114,6 +113,8 @@ func (r *MongoUsersRepository) FindByCriteria(ctx *context.Context, c criteria.C
 		return collection.Collection{}, user.NewUserError(errors.UNKNOWN_ERROR)
 	}
 
+	result := collection.New()
+
 	for _, r := range results {
 		u, err := newUserFromMongoUser(r)
 
@@ -121,10 +122,12 @@ func (r *MongoUsersRepository) FindByCriteria(ctx *context.Context, c criteria.C
 			return collection.Collection{}, user.NewUserError(user.INVALID_USER_ERROR)
 		}
 
-		users = append(users, u)
+		result.Add(u)
 	}
 
-	return collection.NewCollection(users, p.Page(), p.PageSize(), uint32(count&0xffffffff)), nil
+	result.SetMetadata(p.Page(), p.PageSize(), uint32(count&0xffffffff))
+
+	return result, nil
 }
 
 func (r *MongoUsersRepository) Delete(ctx *context.Context, id vo.Id) *errors.AppError {

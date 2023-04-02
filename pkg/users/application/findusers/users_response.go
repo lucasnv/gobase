@@ -14,21 +14,20 @@ type userResponse struct {
 }
 
 func NewUsersResponse(c collection.Collection) collection.Collection {
-	var response []userResponse
-	users := c.Data().(domain.List)
 
-	for _, u := range users {
-		id := u.GetId()
-		createdAt := u.GetCreatedAt()
+	response := c.Transform(func(item any) any {
+		user := item.(domain.User)
+		id := user.GetId()
+		createdAt := user.GetCreatedAt()
 
-		response = append(response, userResponse{
+		return userResponse{
 			Id:        id.ToString(),
-			FirstName: u.GetFirstName().Value,
-			LastName:  u.GetLastName().Value,
-			Email:     u.GetEmail().Value,
+			FirstName: user.GetFirstName().Value,
+			LastName:  user.GetLastName().Value,
+			Email:     user.GetEmail().Value,
 			CreatedAt: createdAt.ToString(),
-		})
-	}
+		}
+	})
 
-	return c.SetData(response)
+	return response
 }
